@@ -11,7 +11,7 @@
 # AppUserModelID). Nothing on screen reads it.
 appId: com.projecttriune.helper
 productName: Nexus Reader
-copyright: Aoezpz
+copyright: AO
 
 directories:
   buildResources: build

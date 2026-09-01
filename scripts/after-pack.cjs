@@ -58,8 +58,8 @@ exports.default = async function afterPack(context) {
       '--set-product-version', version,
       '--set-version-string', 'ProductName', 'Nexus Reader',
       '--set-version-string', 'FileDescription', 'Nexus Reader',
-      '--set-version-string', 'CompanyName', 'Aoezpz',
-      '--set-version-string', 'LegalCopyright', 'Aoezpz',
+      '--set-version-string', 'CompanyName', 'AO',
+      '--set-version-string', 'LegalCopyright', 'AO',
       '--set-version-string', 'OriginalFilename', 'Nexus Reader.exe',
       '--set-version-string', 'InternalName', 'Nexus Reader'
     ],

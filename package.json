@@ -4,7 +4,7 @@
   "version": "0.2.0",
   "description": "Emu multitool for three-classes-in-one EverQuest emulator servers - live DPS meter, fight timeline, alerts and progression, read from your own logs.",
   "main": "./out/main/index.js",
-  "author": "Aoezpz",
+  "author": "AO",
   "license": "MIT",
   "private": true,
   "scripts": {
