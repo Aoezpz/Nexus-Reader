@@ -82,9 +82,11 @@ now write `_TSC.txt`. On the site, `tests/test_tip.py` (11) and a
   written against Project Triune's log lines and are unverified against a TSC
   log. `node scripts/unparsed.mjs` on a real TSC log is the next step; the
   README and TESTING.md both say so.
-- **The shortname `TSC` is inferred** from the client's `<Char>_TSC.ini` files.
-  No `eqlog_*_TSC.txt` existed on this machine at build time. The first
-  `/log on` is the test.
+- ~~**The shortname `TSC` is inferred**~~ — **confirmed 2026-09-20 19:36**.
+  It was read off the client's `<Char>_TSC.ini` files because no log existed
+  yet; Deezel has since run `/log on` and the client wrote
+  `eqlog_Deezel_TSC.txt`, which is what `settings.ts` scans for and what
+  `watcher.ts` matches. The default is right.
 - **Step 10 of the rebrand, the GitHub rename**, is still open. Every
   `Aoezpz/Triune-Helper` URL is unchanged and working.
 - **The site's endpoint is written and tested, not deployed.** Until
