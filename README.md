@@ -5,7 +5,7 @@ already writes and turns them into a live DPS meter, a fight timeline, trigger
 alerts, the road to the Plane of Time and the server's raid records.
 
 It is pointed at one server on purpose: the defaults, the bundled progression
-data and the hover cards all come from [tscemu.com](https://tscemu.com). The
+data and the hover cards all come from it. The
 site is a **data source, not a dependency** — clear the address in Preferences
 and the app runs entirely on its bundled data with no network access at all,
 and pointing it at another server's site is a text field.
