@@ -1,12 +1,12 @@
 /**
  * What a hover card holds.
  *
- * Two shapes, one channel. Both are built in the main process from PTDex and
- * arrive here as plain data - never as HTML. That is deliberate: the site does
- * render a ready-made tooltip card, and pasting it into the app would have been
- * a third of the work, but it would also mean injecting a remote document into
- * the renderer and wearing the site's light-mode table styling inside a dark
- * app. The site is asked for facts; the app draws them.
+ * Two shapes, one channel. Both are built in the main process from the
+ * server's website and arrive here as plain data - never as HTML. That is
+ * deliberate: pasting a remote page fragment into the app would have been a
+ * third of the work, but it would also mean injecting a remote document into
+ * the renderer and wearing the site's styling inside the app. The site is
+ * asked for facts; the app draws them.
  */
 
 export interface SpellTip {
@@ -21,8 +21,8 @@ export interface SpellTip {
   durationTicks: number | null
   range: number | null
   resist: string | null
-  /** "Decrease Hitpoints by 200", "Stun (3.0 sec)" - rendered by PTDex, which
-   *  owns the effect formulas, and taken as text. */
+  /** "Decrease Hitpoints by 200", "Stun (3.0 sec)" - rendered by the site,
+   *  which owns the effect formulas, and taken as text. */
   effects: string[]
   /** Which classes can cast it and from what level. Empty for a proc. */
   classes: Array<{ abbrev: string; level: number }>
@@ -49,7 +49,7 @@ export type Tip = SpellTip | ItemTip
 export type TipKind = Tip['kind']
 
 export interface TipResult {
-  /** False means PTDex has no such name - which is a real answer, not a fault. */
+  /** False means the site has no such name - which is a real answer, not a fault. */
   found: boolean
   tip: Tip | null
   /** Set only when the lookup could not be completed at all. */
@@ -78,7 +78,7 @@ export const RESIST_NAMES: Record<number, string> = {
 }
 
 /**
- * Is this skill name worth asking PTDex about?
+ * Is this skill name worth asking the site about?
  *
  * The parser canonicalises weapon swings to their lower-case first-person verb
  * - `slash`, `kick`, `frenzy on` - while spells, procs and discs keep the

@@ -17,22 +17,23 @@ import { ClassChips } from '../components/Classes'
  * their own heading, because reading somebody's log is not evidence that they
  * are standing next to you.
  *
- * The classes come from PTDex, because no log line has ever stated one.
+ * The classes come from the server's website, because no log line has ever
+ * stated one.
  */
 
 const SLOT_VARS = ['var(--slot-1)', 'var(--slot-2)', 'var(--slot-3)']
 
-/** Everything PTDex told us, for the row's tooltip. */
+/** Everything the site told us, for the row's tooltip. */
 function describe(name: string, id: Identity | undefined): string {
   if (!id) return `${name} — not looked up yet`
-  if (!id.found) return `${name} — no character by that name on PTDex`
+  if (!id.found) return `${name} — no character by that name on the site`
   return [
     name,
     id.level ? `level ${id.level}` : null,
     id.race,
     classTitle(id),
     id.guild ? `<${id.guild}>` : null,
-    id.score !== null ? `score ${id.score}` : null,
+    id.score !== null ? `gear score ${id.score}` : null,
     id.trioRank && id.trioOf ? `#${id.trioRank} of ${id.trioOf} running this trio` : null,
     id.overallRank ? `#${id.overallRank} overall` : null
   ]
@@ -89,8 +90,8 @@ export function Party({
           <span className="pty-lvl num">{id.level}</span>
         ) : (
           // The three states are said plainly rather than left blank: an empty
-          // slot reads as a bug, and "PTDex has never heard of this character"
-          // is a real answer - it is what a brand-new alt looks like.
+          // slot reads as a bug, and "the site has never heard of this
+          // character" is a real answer - it is what a brand-new alt looks like.
           <span className="pty-unknown">
             {id === undefined ? '…' : id.found ? '—' : 'unlisted'}
           </span>
@@ -111,7 +112,7 @@ export function Party({
         <button
           className="party-sync"
           type="button"
-          title="Re-read levels and classes from PTDex"
+          title="Re-read levels and classes from the server's website"
           disabled={busy || refreshing}
           onClick={() => {
             setRefreshing(true)

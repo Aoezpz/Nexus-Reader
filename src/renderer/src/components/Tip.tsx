@@ -8,8 +8,8 @@ import { seconds, ticksToText, type Tip, type TipKind } from '@shared/tooltip'
  *
  * "Hexzo hit Diaku Guardian for 950 points of non-melee damage. (Time Rend)"
  * tells you a number and withholds everything that would let you judge it.
- * PTDex knows what Time Rend is; this puts that knowledge under the cursor
- * without making anybody alt-tab to a browser.
+ * The server's website knows what Time Rend is; this puts that knowledge under
+ * the cursor without making anybody alt-tab to a browser.
  *
  * Three rules keep it out of the way:
  *
@@ -19,8 +19,8 @@ import { seconds, ticksToText, type Tip, type TipKind } from '@shared/tooltip'
  *   * **Asked once, ever.** Results are cached in this module for the session
  *     and on disk in main, so the second hover is instant and the hundredth
  *     costs nothing.
- *   * **Silence on a miss.** A name PTDex has never heard of shows no card. An
- *     empty box that says "not found" is a worse answer than no box.
+ *   * **Silence on a miss.** A name the site has never heard of shows no card.
+ *     An empty box that says "not found" is a worse answer than no box.
  */
 
 const DWELL_MS = 350
@@ -180,7 +180,7 @@ function SpellBody({ tip }: { tip: Extract<Tip, { kind: 'spell' }> }): JSX.Eleme
         // Said plainly. This happens for a handful of internal spells that
         // carry no player-facing data at all, and pretending otherwise would
         // mean inventing something.
-        <div className="tc-meta">PTDex lists this spell but has no details for it.</div>
+        <div className="tc-meta">The site lists this spell but has no details for it.</div>
       )}
     </>
   )

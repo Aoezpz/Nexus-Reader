@@ -1,14 +1,14 @@
 import Store from 'electron-store'
 import type { ParsedEvent } from '@shared/parser/types'
 import type { Identity, RosterState } from '@shared/roster'
-import { findCharacter } from './ptdex'
+import { findCharacter } from './site'
 
 /**
  * The identity cache.
  *
- * Every name the app is willing to call a player gets looked up on PTDex once,
- * and what comes back - level, the three classes, guild, score, rank - is kept
- * so it never has to be asked again this week.
+ * Every name the app is willing to call a player gets looked up on the
+ * server's website once, and what comes back - level, the three classes,
+ * score, trio rank - is kept so it never has to be asked again this week.
  *
  * Three rules keep this from turning into a scraper:
  *
@@ -32,8 +32,8 @@ const MAX_QUEUE = 40
 
 /**
  * EverQuest names are letters only. This is a guard, not a nicety: it is the
- * one thing standing between a mis-parsed line and the app POSTing arbitrary
- * text at somebody else's website.
+ * one thing standing between a mis-parsed line and the app sending arbitrary
+ * text at a website in a query string.
  */
 const NAME_RE = /^[A-Za-z]{3,20}$/
 
@@ -47,8 +47,18 @@ const store = new Store<Persisted>({
   clearInvalidConfig: true
 })
 
+/**
+ * Identities cached from the previous site carry a numeric id and that site's
+ * class spellings. They are not this server's people - the same name on two
+ * servers is two characters - so anything with a number for an id is dropped
+ * on load and looked up afresh. Costs one request per name, once.
+ */
+function stillOurs(entries: Array<[string, Identity]>): Array<[string, Identity]> {
+  return entries.filter(([, id]) => typeof id.id !== 'number')
+}
+
 export class Roster {
-  private known = new Map<string, Identity>(Object.entries(store.get('known') ?? {}))
+  private known = new Map<string, Identity>(stillOurs(Object.entries(store.get('known') ?? {})))
   private groups: Record<string, string[]> = {}
   private queue: string[] = []
   private queued = new Set<string>()
@@ -132,7 +142,7 @@ export class Roster {
    */
   put(found: {
     name: string
-    id: number
+    id: string
     level: number | null
     race: string | null
     classes: string[]

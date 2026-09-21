@@ -48,22 +48,41 @@
 .titlebar > * { position: relative; z-index: 1; }
 .titlebar > .aurora { z-index: 0; opacity: 0.3; }
 
-/* A thin gold filament along the bottom edge, brightest under the brand. */
+/* The filament along the bottom edge - the site's travelling red thread under
+   its top bar, brought over as-is. It is the fire, so it takes --ember and
+   --arcane-hi rather than the accent, and it is the one animated line in the
+   chrome: eleven seconds end to end, slow enough not to catch the eye while a
+   number is being read. */
 .titlebar::after {
   content: '';
   position: absolute;
   left: 0; right: 0; bottom: 0;
   height: 1px;
   z-index: 2;
-  background: linear-gradient(90deg, var(--gold) 0%, color-mix(in srgb, var(--gold) 15%, transparent) 28%, transparent 60%);
+  opacity: 0.85;
+  background: linear-gradient(90deg, transparent 0%, var(--ember) 18%, var(--arcane-hi) 34%, var(--ember) 50%, transparent 72%, transparent 100%);
+  background-size: 260% 100%;
+  animation: filament 11s linear infinite;
   pointer-events: none;
 }
+@keyframes filament { from { background-position: 130% 0; } to { background-position: -130% 0; } }
+@media (prefers-reduced-motion: reduce) { .titlebar::after { animation: none; background-position: 0 0; } }
 
 .titlebar .brand {
   display: flex;
   align-items: center;
   gap: var(--s-2);
   min-width: 0;
+}
+/* The phoenix, at the height of the two-line wordmark beside it. The crest's
+   own ratio is 560:383, so at this height it is about 2.75rem wide. */
+.titlebar .brandmark {
+  height: 2.25rem;
+  width: auto;
+  flex: none;
+  /* Lifted a little: the crest was vignetted for a page, and at title-bar
+     size on the darker title-bar ground it went dim. */
+  filter: brightness(1.18) drop-shadow(0 0 8px color-mix(in srgb, var(--ember) 40%, transparent));
 }
 /* Cinzel is inscriptional: it wants air between the letters, and its lowercase
    are small caps, so "Nexus Reader" sets as NEXUS READER without a
@@ -77,15 +96,44 @@
   letter-spacing: 0.06em;
   white-space: nowrap;
 }
+/* The server's name, set the way the site sets its own wordmark: Cinzel, small
+   caps, wide tracking. It is the one place the app names the server, and it
+   names it in the site's own voice. */
 .titlebar .brand .wordmark small {
   display: block;
-  font-family: var(--nms-sans);
-  font-size: 0.52rem;
-  letter-spacing: 0.2em;
+  font-family: var(--nms-serif);
+  font-size: 0.5rem;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--muted);
+  font-weight: 700;
+  margin-top: 0.15rem;
+}
+
+/* Souls in the world, from the site's /world. Sits beside the character
+   picker because it is the same kind of fact - who is on - read from the other
+   end. Absent, not zero, when the site is not counting. */
+.souls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 1.875rem;
+  padding: 0 0.65rem;
+  border: var(--line-w) solid var(--line-2);
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--void) 60%, transparent);
+  color: var(--text-2);
+  font-size: 0.74rem;
   font-weight: 600;
-  margin-top: 0.125rem;
+  white-space: nowrap;
+  cursor: default;
+}
+.souls b { font-variant-numeric: tabular-nums; color: var(--text); }
+.souls .sdot {
+  width: 0.4rem; height: 0.4rem;
+  border-radius: 50%;
+  background: var(--ember);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--ember) 70%, transparent);
 }
 
 /* Character selector */
@@ -345,8 +393,8 @@
 .page > .panel,
 .page > section.panel { flex: none; }
 
-.page-head { display: flex; align-items: center; gap: var(--s-2) var(--s-3); flex-wrap: wrap; }
-.page-head h1 { font-size: 1.45rem; }
+.page-head { display: flex; align-items: center; gap: var(--s-2) var(--s-3); flex-wrap: wrap; padding-bottom: var(--s-2); }
+.page-head h1 { font-size: 1.45rem; color: var(--gold-hi); }
 /* The lede always takes its own line under the title row, so a wide chip or
    status pill on the right can't push it into a narrow column beside the h1. */
 .page-head .lede {
@@ -375,8 +423,12 @@
    Overview hero (first run)
    ------------------------------------------------------------
    The one screen that gets to be loud. It exists to be looked at once, so it
-   carries the aurora, the starfield and the turning crest; every screen after
-   it is a working surface and stays quiet.
+   carries the aurora, the starfield and the phoenix; every screen after it is
+   a working surface and stays quiet.
+
+   The phoenix is the site's own crest (assets/phoenix-crest.png, already
+   vignetted to nothing at its edges, which is why no mask is needed). It
+   stands over the headline the way it stands over the site's sign-in gate.
    ============================================================ */
 .hero {
   position: relative;
@@ -391,6 +443,12 @@
     radial-gradient(60% 90% at 15% 100%, color-mix(in srgb, var(--ember) 22%, transparent), transparent 60%),
     radial-gradient(60% 90% at 85% 100%, color-mix(in srgb, var(--arcane) 22%, transparent), transparent 60%),
     linear-gradient(180deg, var(--surface), var(--void));
+}
+.hero-phx {
+  width: min(18rem, 60vw);
+  height: auto;
+  margin-bottom: var(--s-2);
+  filter: drop-shadow(0 0 34px color-mix(in srgb, var(--ember) 42%, transparent));
 }
 .hero-inner {
   position: relative;
@@ -421,6 +479,9 @@
 }
 .hero-inner .hint { color: var(--muted); font-size: 0.8rem; margin: var(--s-4) 0 0; }
 
+/* Accent, not secondary: a file name or a slash command is something to read,
+   and in Moonrise the secondary is the red - which would make every `/log on`
+   look like an error. */
 code {
   font-family: var(--nms-mono);
   font-size: 0.9em;
@@ -428,7 +489,7 @@ code {
   border-radius: var(--r-sm);
   background: color-mix(in srgb, var(--void) 70%, transparent);
   border: var(--line-w) solid var(--line);
-  color: var(--arcane-hi);
+  color: var(--gold-hi);
 }
 
 .err { color: var(--bad); font-size: 0.8rem; }
@@ -615,27 +676,173 @@ code {
    it the panels shrink to fit and quietly clip their own contents. */
 .loot > .panel, .loot > .loot-splits, .loot > .loot-hero { flex: none; }
 
-.loot-hero {
+/* ============================================================
+   Page headers - the site's masthead language
+   ------------------------------------------------------------
+   Every section page opens with one of these (.loot-hero, .lb-hero,
+   .prog-hero, and the slimmer .page-head). They used to be a starfield with
+   an aurora behind it, which was the previous server's look. Now they are the
+   site's: its cold-valley ground plate (assets/ground-cold.jpg, the moonrise
+   set) under a scrim of the ground colour, the corner brackets its panels
+   wear, a mono kicker in the fire colour, a Cinzel title with the site's
+   diamond-and-hairline rule beside it, and the red filament at the foot. No
+   stars. The coals (the aurora) stay, faint, as the light in the room.
+
+   Everything here is a token, so the other schemes get the same header
+   composed in their own colours - only the ground plate is literal, and it is
+   dark enough to read as texture under any of them.
+   ============================================================ */
+.loot-hero,
+.lb-hero,
+.prog-hero {
   position: relative;
   overflow: hidden;
-  border: var(--line-w) solid var(--line);
+  border: var(--line-w) solid var(--line-2);
   border-radius: var(--r-3);
-  background: linear-gradient(160deg, color-mix(in srgb, var(--surface) 90%, transparent), color-mix(in srgb, var(--abyss) 90%, transparent));
-  padding: var(--s-5) var(--s-4);
-  margin-bottom: var(--s-3);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--void) 92%, transparent) 0%, color-mix(in srgb, var(--void) 78%, transparent) 45%, color-mix(in srgb, var(--void) 58%, transparent) 100%),
+    url('../assets/ground-cold.jpg') center 60% / cover no-repeat var(--void);
+  box-shadow: var(--shadow-panel);
+}
+.loot-hero { padding: var(--s-5) var(--s-5); margin-bottom: var(--s-3); }
+
+/* The corner brackets: one inset hairline, masked to its four corners, the
+   way the site's .panel::before is built. */
+.loot-hero::before,
+.lb-hero::before,
+.prog-hero::before {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  z-index: 2;
+  pointer-events: none;
+  border: var(--line-w) solid color-mix(in srgb, var(--gold) 55%, transparent);
+  -webkit-mask:
+    linear-gradient(#000 0 0) top left / 1.5rem 1.5rem no-repeat,
+    linear-gradient(#000 0 0) top right / 1.5rem 1.5rem no-repeat,
+    linear-gradient(#000 0 0) bottom left / 1.5rem 1.5rem no-repeat,
+    linear-gradient(#000 0 0) bottom right / 1.5rem 1.5rem no-repeat;
+  mask:
+    linear-gradient(#000 0 0) top left / 1.5rem 1.5rem no-repeat,
+    linear-gradient(#000 0 0) top right / 1.5rem 1.5rem no-repeat,
+    linear-gradient(#000 0 0) bottom left / 1.5rem 1.5rem no-repeat,
+    linear-gradient(#000 0 0) bottom right / 1.5rem 1.5rem no-repeat;
+}
+/* The filament at the foot. Still, unlike the title bar's: one moving line
+   in the chrome is the budget. */
+.loot-hero::after,
+.lb-hero::after,
+.prog-hero::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.8;
+  background: linear-gradient(90deg, transparent, var(--ember) 18%, var(--arcane-hi) 34%, var(--ember) 50%, transparent 72%);
+}
+.loot-hero .starfield,
+.lb-hero .starfield,
+.prog-hero .starfield { display: none; }
+.loot-hero .aurora,
+.lb-hero .aurora,
+.prog-hero .aurora { opacity: 0.26; }
+/* The Overview banner carries the painting instead of the plate; its scrim
+   and art are set in .hero-art below and must win over the plate here. */
+.loot-hero.hero-art::before { border-color: color-mix(in srgb, var(--gold) 40%, transparent); }
+
+/* The kicker, in the site's voice: mono, the fire colour, wide tracking. */
+.loot-hero .eyebrow,
+.lb-hero .eyebrow,
+.prog-hero .eyebrow,
+.page-head .eyebrow {
+  font-family: var(--nms-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--arcane-hi);
+}
+
+/* The title, with the site's h2row rule: a diamond before it and a hairline
+   running out to the right, silver fading through the fire to nothing. Flex
+   so the hairline takes whatever width the title leaves. The gradient text
+   is the site's `.silver`; the title's own background is what is clipped,
+   and the pseudo-elements paint their own. */
+.lh-copy h1,
+.lb-hero h1,
+.ph-copy h1,
+.page-head h1 {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-width: 0;
+  letter-spacing: 0.04em;
+}
+.lh-copy h1::before,
+.lb-hero h1::before,
+.ph-copy h1::before,
+.page-head h1::before {
+  content: '';
+  flex: none;
+  width: 0.5rem; height: 0.5rem;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--gold-hi), var(--gold-deep));
+  box-shadow: 0 0 9px color-mix(in srgb, var(--gold) 55%, transparent);
+}
+.lh-copy h1::after,
+.lb-hero h1::after,
+.ph-copy h1::after,
+.page-head h1::after {
+  content: '';
+  flex: 1 1 3rem;
+  min-width: 3rem;
+  height: 1px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--gold) 55%, transparent), color-mix(in srgb, var(--ember) 35%, transparent) 45%, transparent);
+}
+.lh-copy h1 > span,
+.lb-hero h1 > span,
+.ph-copy h1 > span,
+.page-head h1 > span { min-width: 0; }
+.page-head { align-items: center; }
+.page-head h1 { flex: 1 1 auto; }
+
+/* The figure on the right: the site's ribbon - a Cinzel number in silver,
+   a mono label under it. */
+.lh-total .n,
+.lb-totals .n,
+.ph-tally .n {
+  font-family: var(--nms-serif);
+  font-weight: 700;
+  background: linear-gradient(180deg, var(--gold-hi), var(--gold) 50%, var(--gold-deep));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.lh-total .l,
+.lb-totals .l,
+.ph-tally .l {
+  font-family: var(--nms-mono);
+  font-size: 0.56rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 /* --- The Overview banner, with key art -----------------------------------
-   Key art instead of the procedural starfield. It is bundled
-   (assets/hero-portal.jpg) rather than fetched: the app has no network at first
-   paint and its CSP allows 'self' only.
+   The site's own moonrise banner (assets/moonrise-banner.jpg - the phoenix
+   over a cold valley, its black bars already cut away) instead of the
+   procedural starfield. Bundled rather than fetched: the app has no network at
+   first paint and its CSP allows 'self' only.
 
    FULL BLEED, edge to edge. The art fills the whole panel and the copy sits on
    the picture, not on a dark field beside it.
 
-   The art is 21:9 and the panel is nearer 15:4, so `cover` gives up some
-   height. `center 38%` decides which: biased upward, because the top of the
-   frame holds the ring's crown and the bottom holds foreground paving, and of
-   the two the crown is worth keeping.
+   The art is 2142x402, which is wider than the panel's ratio, so `cover`
+   crops the sides rather than the top - and the phoenix is in the middle of
+   the frame, so `center` keeps it. The 0.2.0 art needed an upward bias to
+   keep its crown; this one does not.
 
    The scrim is the only thing between the copy and a lit background, so it is
    doing real work here rather than decorating. Every stop is a token, so it
@@ -644,8 +851,7 @@ code {
   min-height: 18rem;
   display: flex;
   align-items: center;
-  background-color: var(--void);
-  background-image:
+  background:
     linear-gradient(
       90deg,
       color-mix(in srgb, var(--void) 88%, transparent) 0%,
@@ -654,10 +860,7 @@ code {
       color-mix(in srgb, var(--void) 12%, transparent) 54%,
       transparent 68%
     ),
-    url('../assets/hero-portal.jpg');
-  background-size: 100% 100%, cover;
-  background-position: center, center 38%;
-  background-repeat: no-repeat, no-repeat;
+    url('../assets/moonrise-banner.jpg') center / cover no-repeat var(--void);
 }
 /* The copy stops short of the ring rather than overlapping it. */
 .loot-hero.hero-art .lh-copy { flex: 0 1 34rem; }
@@ -674,19 +877,17 @@ code {
   width: 100%;
 }
 .lh-copy { min-width: 0; flex: 1 1 20rem; }
-.lh-copy h1 { font-family: var(--nms-serif); font-size: 2rem; margin: 0.15rem 0 0.35rem; color: var(--gold-hi); }
+.lh-copy h1 { font-family: var(--nms-serif); font-size: 1.9rem; margin: 0.35rem 0 0.5rem; color: var(--gold-hi); }
 .lh-copy .lede { margin: 0; max-width: 48ch; color: var(--text-2); font-size: 0.86rem; line-height: 1.5; }
 
 .lh-total { text-align: right; flex: none; }
 .lh-total .n {
   display: block;
-  font-size: 1.9rem;
-  font-weight: 800;
-  color: var(--text);
+  font-size: 2rem;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
 }
-.lh-total .l { font-size: 0.72rem; color: var(--muted); }
+.lh-total .l { display: block; margin-top: 0.2rem; }
 
 .loot-splits {
   display: grid;
@@ -1078,6 +1279,51 @@ code {
 .offer .o-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .offer .o-when { text-align: right; font-size: 0.68rem; }
 .offer .o-sep { color: var(--line-2); margin: 0 0.35rem; }
+
+/* ---- Tonight (Server): the site's podium, chronicle and feed ----
+   Two columns: the standings and the firsts on the left, the thirty-day feed
+   on the right. The feed reuses the market's .offer row, because it is the
+   same shape of thing - who, what, when. */
+.tonight { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: var(--s-5); }
+@media (max-width: 71.875em) { .tonight { grid-template-columns: 1fr; } }
+
+.podium { display: grid; gap: 0.375rem; }
+.podium .step {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr) auto auto auto;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 0.45rem var(--s-3);
+  border: var(--line-w) solid var(--line);
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--void) 40%, transparent);
+}
+/* Three shades of one metal, not gold, silver and bronze - the site's own
+   rule for its podium, and the reason nothing warm is on it. */
+.podium .step.p1 { border-color: color-mix(in srgb, var(--gold-hi) 45%, transparent); }
+.podium .step .place { font-family: var(--nms-serif); font-weight: 700; color: var(--muted); }
+.podium .step.p1 .place { color: var(--gold-hi); }
+.podium .step.p2 .place { color: var(--gold); }
+.podium .step .nm { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.podium .step .vv { font-weight: 800; color: var(--gold-hi); }
+.podium .step .lv { font-size: 0.66rem; color: var(--muted); white-space: nowrap; }
+
+.chron { display: flex; flex-direction: column; gap: 0.25rem; }
+.chron .ev {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  gap: 0 var(--s-3);
+  padding: 0.35rem var(--s-2);
+  border-left: 2px solid var(--gold-deep);
+  font-size: 0.78rem;
+}
+.chron .ev .d { font-size: 0.64rem; color: var(--muted); font-variant-numeric: tabular-nums; grid-row: span 3; padding-top: 0.15rem; }
+.chron .ev .w { font-weight: 700; color: var(--text); }
+.chron .ev .who { color: var(--gold-hi); font-weight: 600; }
+.chron .ev .dt { color: var(--muted); font-size: 0.72rem; }
+
+.offer.feed { grid-template-columns: 2.6rem 9rem minmax(0, 1fr) 4.5rem; }
+.offer.feed .o-text b { color: var(--text); font-weight: 600; }
 
 /* ---- buff board & target card (Combat) ---- */
 .buffs { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-bottom: var(--s-2); }

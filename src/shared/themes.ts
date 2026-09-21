@@ -21,6 +21,18 @@ export interface ThemeDef {
 
 export const THEMES: ThemeDef[] = [
   {
+    id: 'tsc',
+    name: 'The Second Calling',
+    note: "The site's own palette: onyx navy, silver, the red kept for the chrome.",
+    swatch: ['#0b1120', '#c9d6e6', '#ff5a63']
+  },
+  {
+    id: 'tsc-ember',
+    name: 'Second Calling · Ember',
+    note: 'The same palette with the red on the accent. Sits close to the death colour; the site wears it, the meter mostly should not.',
+    swatch: ['#0b1120', '#d0343f', '#c9d6e6']
+  },
+  {
     id: 'obelisk',
     name: 'Obelisk',
     note: 'Near-black violet, amethyst accent, cyan highlights.',
@@ -71,12 +83,15 @@ export const THEMES: ThemeDef[] = [
 ]
 
 /**
- * Renaming this id from 'voidforge' is safe by construction: `isTheme` rejects
- * the old id, so a settings file still holding it falls through to the default
- * - which is the same scheme, retuned. Nobody lands on a broken theme, and
- * nothing has to migrate.
+ * The Second Calling became the default in 0.3.0, when the app took the
+ * server's own palette. Obelisk, the default before it, is now a real id with
+ * its own block in theme.css - so a settings file still holding 'obelisk'
+ * keeps the look it had rather than silently changing colour on update. (The
+ * rename before that, 'voidforge' -> 'obelisk', went the other way: the old
+ * id was simply rejected and fell through to the default, which was the same
+ * scheme retuned.)
  */
-export const DEFAULT_THEME = 'obelisk'
+export const DEFAULT_THEME = 'tsc'
 
 export function isTheme(id: string): boolean {
   return THEMES.some((t) => t.id === id)
@@ -86,7 +101,7 @@ export function isTheme(id: string): boolean {
  * Put a scheme on the document.
  *
  * The default is written as an absent attribute rather than as
- * `data-theme="obelisk"`, because its values ARE the `:root` block - a
+ * `data-theme="tsc"`, because its values ARE the `:root` block - a
  * scheme selector that restates the defaults is a second copy to keep in step.
  *
  * The element is typed structurally rather than as an HTMLElement: this module

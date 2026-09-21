@@ -7,6 +7,8 @@ import {
   recent,
   type ServerData
 } from '@shared/server'
+import type { ChampionsResult } from '@shared/site'
+import { abbrevOf, classColor, CLASS_NAMES } from '@shared/roster'
 import { countdown, duration } from '@shared/timers'
 import { Aurora, Starfield } from '../components/Ambient'
 import { Tipped } from '../components/Tip'
@@ -20,22 +22,27 @@ import { Tipped } from '../components/Tip'
  * total, and the page says so where somebody might otherwise read a count as
  * a population.
  *
- * Four views rather than one long scroll, because they are read in completely
+ * Five views rather than one long scroll, because they are read in completely
  * different ways. Grouping and the market are live feeds you would leave open;
  * blessings are a glance you take once a session; the census is reference
  * material. Stacked, the feeds sat below two screens of the other two, which
  * meant the things that change most often were the hardest to see - see TABS
  * for the order that fixes it.
+ *
+ * The fifth, Tonight, is the exception to the page's caveat: it is not
+ * heard on a channel, it is read off the server's website, which sees the
+ * whole server rather than the part of it that shouted near you.
  */
-export type ServerView = 'blessings' | 'players' | 'grouping' | 'market'
+export type ServerView = 'tonight' | 'blessings' | 'players' | 'grouping' | 'market'
 
 /**
  * Tab order, most-watched first.
  *
  * The two live feeds lead, because they are the reason to open this page at
- * all - trade and grouping change by the minute. Blessings are a glance you
- * take once a session, and the census is reference material nobody watches, so
- * they sit at the end.
+ * all - trade and grouping change by the minute. Tonight is the site's own
+ * record of what happened, worth a look once a session. Blessings are a
+ * glance, and the census is reference material nobody watches, so they sit at
+ * the end.
  *
  * Declared here rather than inline so the order lives in one place; the
  * sections below render on `view` and their order in the file does not matter.
@@ -43,6 +50,7 @@ export type ServerView = 'blessings' | 'players' | 'grouping' | 'market'
 const TABS: Array<[ServerView, string]> = [
   ['market', 'Auction & trade'],
   ['grouping', 'Grouping'],
+  ['tonight', 'Tonight'],
   ['blessings', 'Blessings'],
   ['players', 'Who is out there']
 ]
@@ -68,6 +76,19 @@ export function Server({
   const [now, setNow] = useState(() => Date.now())
   const [confirmReset, setConfirmReset] = useState(false)
   const [filter, setFilter] = useState<MarketFilter>('all')
+
+  // The Hall, from the site. Asked for when the tab is opened, and cached in
+  // main for five minutes, so flicking between tabs costs nothing.
+  const [hall, setHall] = useState<ChampionsResult | null>(null)
+  const [hallBusy, setHallBusy] = useState(false)
+  const loadHall = useCallback(async (force = false) => {
+    setHallBusy(true)
+    setHall(await window.triune.invoke('site:champions', { force }))
+    setHallBusy(false)
+  }, [])
+  useEffect(() => {
+    if (view === 'tonight' && !hall) void loadHall()
+  }, [view, hall, loadHall])
 
   const load = useCallback(async () => {
     setData(await window.triune.invoke('server:get'))
@@ -144,6 +165,123 @@ export function Server({
           </div>
         </div>
       </header>
+
+      {/* ---- Tonight, from the site ---- */}
+      {view === 'tonight' && (
+        <section className="panel">
+          <div className="phead">
+            <span className="t">Tonight in the Hall</span>
+            <span className="meta">
+              {hall?.data
+                ? `${hall.data.kills.toLocaleString()} kills on record · ${hall.data.active} active · ${hall.data.hours.toLocaleString()} hours played`
+                : hallBusy
+                  ? 'reading the site…'
+                  : 'from the site'}
+            </span>
+          </div>
+          <div className="pbody">
+            {hall?.error && (
+              <p className="err" style={{ marginTop: 0 }}>
+                {hall.error}
+                {hall.stale && ' Showing the last copy that loaded.'}
+              </p>
+            )}
+            {!hall?.data && !hall?.error && <p className="fhint" style={{ marginBottom: 0 }}>Reading the site…</p>}
+            {hall?.data && (
+              <div className="tonight">
+                <div>
+                  <div className="tm-sub">Champions · the standings</div>
+                  {hall.data.leaders.length === 0 ? (
+                    <p className="fhint">Nobody is ranked yet.</p>
+                  ) : (
+                    <div className="podium">
+                      {hall.data.leaders.map((l) => (
+                        <div className={`step p${l.place}`} key={l.name}>
+                          <span className="place num">{l.place}</span>
+                          <span className="nm">{l.name}</span>
+                          <span className="cchips sm">
+                            {l.classes.map((c, i) => {
+                              const a = abbrevOf(c)
+                              return a ? (
+                                <span className="cchip" key={`${a}-${i}`} title={CLASS_NAMES[a]} style={{ color: classColor(a) }}>
+                                  {a}
+                                </span>
+                              ) : null
+                            })}
+                          </span>
+                          <span className="vv num">{l.display}</span>
+                          <span className="lv">level {l.level}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {hall.data.newest && (
+                    <p className="fhint">
+                      Newest soul: <b>{hall.data.newest.name}</b>, {hall.data.newest.when}.
+                    </p>
+                  )}
+
+                  <div className="tm-sub" style={{ marginTop: 'var(--s-4)' }}>The Chronicle · firsts that never change</div>
+                  <div className="chron">
+                    {hall.data.chronicle.map((c) => (
+                      <div className="ev" key={c.title}>
+                        <span className="d">{c.date || '—'}</span>
+                        <span className="w">{c.title}</span>
+                        <span className="who">{c.who}</span>
+                        <span className="dt">{c.detail}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="tm-sub">What happened · the last thirty days</div>
+                  {hall.data.events.length === 0 ? (
+                    <p className="fhint">Nothing has happened yet that the game wrote down.</p>
+                  ) : (
+                    <div className="offers">
+                      {hall.data.events.map((e, i) => (
+                        <div className="offer feed" key={`${e.when}-${i}`}>
+                          <span className={`o-tag ${e.kind === 'born' ? 'none' : e.first ? 'give' : 'sell'}`}>
+                            {e.kind === 'born' ? 'new' : e.first ? 'first' : 'clear'}
+                          </span>
+                          <span className="o-who">{e.party.map((p) => p.name).join(' + ')}</span>
+                          <span className="o-text">
+                            {e.kind === 'born' ? (
+                              'stepped through the gate'
+                            ) : (
+                              <>
+                                <b>{e.name}</b>, {e.bracket.toLowerCase()}, {e.duration}
+                                {e.dps ? ` · ${e.dps.toLocaleString()} dps` : ''}
+                              </>
+                            )}
+                          </span>
+                          <span className="o-when dim">{e.when.slice(5)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            <p className="fhint" style={{ marginBottom: 0 }}>
+              The one tab on this page that is not a sample: it is read from the server&apos;s website, which
+              sees every clear and every new character whether or not you were logged in. Asked for once when
+              the tab opens and held for five minutes.
+            </p>
+            <div className="row" style={{ marginTop: 'var(--s-3)' }}>
+              <button className="btn" type="button" disabled={hallBusy} onClick={() => void loadHall(true)}>
+                {hallBusy ? 'Refreshing…' : 'Refresh'}
+              </button>
+              {hall?.data && (
+                <button className="btn" type="button" onClick={() => void window.triune.invoke('shell:open', hall.data!.boardUrl)}>
+                  Open the standings
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ---- Blessings ---- */}
       {view === 'blessings' && (
@@ -418,7 +556,7 @@ export function Server({
                       because run together they read as one absurd item name.
                       Each is a tooltip, which doubles as the check: a name the
                       extractor merged out of two adjacent items comes back "no
-                      item by that name" from PTDex. */}
+                      item by that name" from the site. */}
                   <span className="o-text" title={o.text}>
                     {o.intent !== null && o.items.length > 0
                       ? o.items.map((it, n) => (
@@ -444,7 +582,7 @@ export function Server({
             wanted — a <code>list</code> row named no WTS/WTB/WTT, so it is shown word for word rather than
             turned into a price list nobody offered. Even then the names are only lifted when they carry a
             tier in brackets, and sellers who run several together without punctuation will have two merge
-            into one — hover a name to check it against PTDex, which is how you spot those. Most lines carry
+            into one — hover a name to check it against the site, which is how you spot those. Most lines carry
             no price at all, and <code>/bazaar</code> trader stock never reaches the log. Hover any row to
             read the line exactly as it was said.
           </p>

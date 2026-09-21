@@ -1,6 +1,7 @@
 import Store from 'electron-store'
 import type { ParsedEvent } from '@shared/parser/types'
 import {
+  allSteps,
   buildKillIndex,
   detectProgress,
   summarizeProgress,
@@ -31,6 +32,15 @@ const store = new Store<{ progress: ProgressState }>({
 export class Progress {
   private state: ProgressState = store.get('progress')
 
+  /**
+   * Marks written by a 0.2.0 build against the previous server's data carry
+   * that server's step keys, which will match nothing here - so on first load
+   * against the new data any mark whose key names a step that no longer
+   * exists is dropped. Kills seen in your log on THIS server keep their keys
+   * and survive. A stale flag on a page is worse than a blank one.
+   */
+  private pruned = false
+
   constructor(private onFlag: (keys: string[], summary: ProgressSummary) => void) {}
 
   data(): ProgressionData {
@@ -42,6 +52,21 @@ export class Progress {
   }
 
   marks(): ProgressState {
+    if (!this.pruned) {
+      this.pruned = true
+      const valid = new Set(allSteps(PROGRESSION).map((s) => s.key))
+      const kept: ProgressState = {}
+      let dropped = 0
+      for (const [key, mark] of Object.entries(this.state)) {
+        if (valid.has(key)) kept[key] = mark
+        else dropped++
+      }
+      if (dropped > 0) {
+        this.state = kept
+        this.persist()
+        console.log(`[progress] dropped ${dropped} mark(s) for steps the bundled data no longer has`)
+      }
+    }
     return this.state
   }
 
@@ -86,12 +111,19 @@ export class Progress {
     return this.summary()
   }
 
-  /** Bulk apply, used by the PTDex sync. Existing log-detected marks win, so a
-   *  sync can add history but never erase something you were there for. */
+  /**
+   * Bulk apply, used by the site sync.
+   *
+   * A site mark REPLACES a log mark for the same step: the log saw the kill,
+   * the site holds the flag, and the flag is the stronger fact - it is what
+   * lets the page stop saying "unconfirmed". A manual tick is left alone; you
+   * said so, and the site agreeing changes nothing.
+   */
   merge(keys: string[], source: ProgMark['source']): ProgressSummary {
     const next = { ...this.state }
     for (const key of keys) {
-      if (!next[key]) next[key] = { at: Date.now(), source }
+      const have = next[key]
+      if (!have || have.source === 'log') next[key] = { at: have?.at ?? Date.now(), source, by: have?.by }
     }
     this.state = next
     this.persist()

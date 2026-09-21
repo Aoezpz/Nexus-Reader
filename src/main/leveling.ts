@@ -185,7 +185,7 @@ export class Leveling {
   }
 
   /**
-   * Record a level learned from PTDex rather than from a ding. Marked as an
+   * Record a level learned from the site rather than from a ding. Marked as an
    * observation, so it sets the current level without counting as a level
    * gained this session.
    */

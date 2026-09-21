@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import type { OverlayPreset, OverlayState } from '@shared/ipc'
+import type { WorldStatus } from '@shared/site'
 import { hasUpdate, type UpdateStatus } from '@shared/update'
 import { Aurora } from './Ambient'
-import { Crest } from './Crest'
 import { IconClose, IconMax, IconMin, IconOverlay } from './Icons'
+import phoenix from '../assets/phoenix-crest.png'
 
 /** Slot colors are positional (see theme.css) - character 1 is always sky. */
 const SLOT_VARS = ['var(--slot-1)', 'var(--slot-2)', 'var(--slot-3)']
@@ -97,6 +98,18 @@ export function TitleBar({
     return window.triune.on('update:status', setUpdate)
   }, [])
 
+  // Souls in the world, from the site, once a minute - which is as often as
+  // the site's own counter moves. Nothing is shown unless the site says it is
+  // counting: "0 souls" because a timer died would be a claim about the
+  // server made by a bug.
+  const [world, setWorld] = useState<WorldStatus | null>(null)
+  useEffect(() => {
+    const ask = (): void => void window.triune.invoke('site:world').then(setWorld)
+    ask()
+    const t = window.setInterval(ask, 60_000)
+    return () => window.clearInterval(t)
+  }, [])
+
   const activeIndex = active ? characters.indexOf(active) : -1
   const slot = SLOT_VARS[activeIndex] ?? 'var(--muted)'
 
@@ -108,19 +121,31 @@ export function TitleBar({
       <Aurora />
 
       <div className="brand">
-        <Crest size={32} />
+        {/* The server's phoenix - the same mark the program icon and the site
+            carry. A raster, because it is a painting, not a glyph; the crest
+            file is already vignetted to nothing at its edges. */}
+        <img className="brandmark" src={phoenix} alt="" aria-hidden="true" />
         <span className="wordmark">
           Nexus Reader
-          {/* The descriptor, not the server. This app is pointed at whichever
-              trio server you play; naming one here would be a lie on every
-              other one. The server you ARE on is named in the character picker
-              at the other end of this bar, where it is a fact rather than a
-              claim. */}
-          <small>Emu Multitool</small>
+          {/* The server, by name, in the site's own lettering. 0.2.0 kept this
+              line generic on purpose; 0.3.0 is built for one server and says
+              so. The shortname the logs actually carry is still shown beside
+              the character picker, where it is a fact read off a filename. */}
+          <small>The Second Calling</small>
         </span>
       </div>
 
       <div className="spacer" />
+
+      {world?.counting && (
+        <span
+          className="souls"
+          title={`${world.souls} in the world right now, as the site counts it — ${world.characters} character${world.characters === 1 ? '' : 's'} online. Asked once a minute.`}
+        >
+          <span className="sdot" aria-hidden="true" />
+          <b>{world.souls}</b> {world.souls === 1 ? 'soul' : 'souls'}
+        </span>
+      )}
 
       {/* Only ever appears when there IS a newer build. An "up to date" badge
           would be noise on every launch forever to say nothing happened.

@@ -7,8 +7,9 @@ import { net } from 'electron'
  * stack, so it inherits the system proxy and certificate store, which matters
  * for anyone playing from behind a corporate network or a VPN.
  *
- * Every caller is a read of a public PTDex page. Nothing here writes anything
- * anywhere, and no credential is ever attached.
+ * Every caller is a read of a public page on the server's website (or GitHub,
+ * for the update check). Nothing here writes anything anywhere, and no
+ * credential is ever attached.
  */
 /**
  * A request that never settles is worse than one that fails.
@@ -21,7 +22,7 @@ import { net } from 'electron'
  */
 const TIMEOUT_MS = 12_000
 
-/** A PTDex page is tens of kilobytes. Anything past this is not what we asked for. */
+/** The site's largest page (the raid records) is under a megabyte. Anything past this is not what we asked for. */
 const MAX_BYTES = 4 * 1024 * 1024
 
 export function request(

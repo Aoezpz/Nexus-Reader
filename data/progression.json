@@ -1,19 +1,19 @@
 {
-  "source": "https://nms.bestemu.com/character/180260/progression",
-  "extractedAt": "2026-08-12T05:36:40.129Z",
-  "note": "Definitions only. Per-character state is tracked by the app, never taken from this file.",
+  "source": "https://tscemu.com/characters/Aodeez/progression",
+  "extractedAt": "2026-09-20T22:51:48.056Z",
+  "note": "Definitions only. Per-character state is tracked by the app, never taken from this file. Flags are account-wide on this server, and a kill outside a progression instance grants no flag.",
   "sections": [
     {
       "id": "the-expansion-gates",
-      "name": "The Expansion Gates",
+      "name": "The expansion gates",
       "detail": "16 bosses · 4 doors",
       "chapters": [
         {
-          "id": "gate-1-the-elder-dragons",
-          "title": "Gate 1 — The Elder Dragons",
-          "era": "RoK",
-          "blurb": "Norrath's two great wyrms still bar the road east.",
-          "opens": "Opens the Ruins of Kunark",
+          "id": "door-1-ruins-of-kunark",
+          "title": "Ruins of Kunark",
+          "era": "Door 1 · RoK",
+          "blurb": null,
+          "opens": "27 zones: Chardok · Chardok: The Halls of Betrayal · Dulak's Harbor · Firiona Vie · Frontier Mountains · Hate's Fury · Kaesora · and 20 more",
           "rows": 2,
           "stages": 2,
           "badgeCount": 2,
@@ -26,34 +26,34 @@
                   "name": "Lord Nagafen",
                   "badge": null,
                   "stages": 1,
-                  "npcId": 32040,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "Nagafen's Lair",
-                  "zoneId": 32,
-                  "zoneShort": "soldungb",
                   "level": 55,
-                  "how": null
+                  "how": null,
+                  "opens": null
                 },
                 {
                   "name": "Lady Vox",
                   "badge": null,
                   "stages": 1,
-                  "npcId": 73057,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "The Permafrost Caverns",
-                  "zoneId": 73,
-                  "zoneShort": "permafrost",
                   "level": 55,
-                  "how": null
+                  "how": null,
+                  "opens": null
                 }
               ]
             }
           ]
         },
         {
-          "id": "gate-2-the-kunark-wyrms",
-          "title": "Gate 2 — The Kunark Wyrms",
-          "era": "SoV",
-          "blurb": "Four dragons scattered the length of Kunark hold the road north.",
-          "opens": "Opens the Scars of Velious",
+          "id": "door-2-scars-of-velious",
+          "title": "Scars of Velious",
+          "era": "Door 2 · SoV",
+          "blurb": null,
+          "opens": "19 zones: Cobaltscar · Dragon Necropolis · Eastern Wastes · Icewell Keep · Kael Drakkel · Siren's Grotto · Skyshrine · and 12 more",
           "rows": 4,
           "stages": 4,
           "badgeCount": 4,
@@ -66,56 +66,56 @@
                   "name": "Trakanon",
                   "badge": null,
                   "stages": 1,
-                  "npcId": 89154,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "The Ruins of Sebilis",
-                  "zoneId": 89,
-                  "zoneShort": "sebilis",
                   "level": 65,
-                  "how": null
+                  "how": null,
+                  "opens": null
                 },
                 {
                   "name": "Gorenaire",
                   "badge": null,
                   "stages": 1,
-                  "npcId": 86014,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "The Dreadlands",
-                  "zoneId": 86,
-                  "zoneShort": "dreadlands",
                   "level": 60,
-                  "how": null
+                  "how": null,
+                  "opens": null
                 },
                 {
                   "name": "Severilous",
                   "badge": null,
                   "stages": 1,
-                  "npcId": 94009,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "The Emerald Jungle",
-                  "zoneId": 94,
-                  "zoneShort": "emeraldjungle",
                   "level": 60,
-                  "how": null
+                  "how": null,
+                  "opens": null
                 },
                 {
                   "name": "Talendor",
                   "badge": null,
                   "stages": 1,
-                  "npcId": 91093,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "The Skyfire Mountains",
-                  "zoneId": 91,
-                  "zoneShort": "skyfire",
                   "level": 60,
-                  "how": null
+                  "how": null,
+                  "opens": null
                 }
               ]
             }
           ]
         },
         {
-          "id": "gate-3-the-velious-wyrms",
-          "title": "Gate 3 — The Velious Wyrms",
-          "era": "SoL",
-          "blurb": "Five more dragons across Velious — the last of them deep inside the Temple of Veeshan.",
-          "opens": "Opens the Shadows of Luclin",
+          "id": "door-3-shadows-of-luclin",
+          "title": "Shadows of Luclin",
+          "era": "Door 3 · SoL",
+          "blurb": null,
+          "opens": "21 zones: Grieg's End · Grimling Forest · Katta Castellum · Marus Seru · Netherbian Lair · Nexus · Sanctus Seru · and 14 more",
           "rows": 5,
           "stages": 5,
           "badgeCount": 5,
@@ -128,67 +128,67 @@
                   "name": "Klandicar",
                   "badge": null,
                   "stages": 1,
-                  "npcId": 120084,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "The Western Wastes",
-                  "zoneId": 120,
-                  "zoneShort": "westwastes",
                   "level": 70,
-                  "how": null
+                  "how": null,
+                  "opens": null
                 },
                 {
                   "name": "Zlandicar",
                   "badge": null,
                   "stages": 1,
-                  "npcId": 123115,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "Dragon Necropolis",
-                  "zoneId": 123,
-                  "zoneShort": "necropolis",
                   "level": 70,
-                  "how": null
+                  "how": null,
+                  "opens": null
                 },
                 {
                   "name": "Wuoshi",
                   "badge": null,
                   "stages": 1,
-                  "npcId": 119112,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "The Wakening Land",
-                  "zoneId": 119,
-                  "zoneShort": "wakening",
                   "level": 64,
-                  "how": null
+                  "how": null,
+                  "opens": null
                 },
                 {
                   "name": "Dozekar the Cursed",
                   "badge": null,
                   "stages": 1,
-                  "npcId": 124037,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "The Temple of Veeshan",
-                  "zoneId": 124,
-                  "zoneShort": "templeveeshan",
                   "level": 66,
-                  "how": null
+                  "how": null,
+                  "opens": null
                 },
                 {
                   "name": "Kelorek`Dar",
                   "badge": null,
                   "stages": 1,
-                  "npcId": 117073,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "Cobaltscar",
-                  "zoneId": 117,
-                  "zoneShort": "cobaltscar",
                   "level": 65,
-                  "how": null
+                  "how": null,
+                  "opens": null
                 }
               ]
             }
           ]
         },
         {
-          "id": "gate-4-the-lords-of-luclin",
-          "title": "Gate 4 — The Lords of Luclin",
-          "era": "PoP",
-          "blurb": "The last door. Five lords of Luclin stand between you and the Planes.",
-          "opens": "Opens the Planes of Power",
+          "id": "door-4-planes-of-power",
+          "title": "Planes of Power",
+          "era": "Door 4 · PoP",
+          "blurb": null,
+          "opens": "24 zones: Bastion of Thunder · Drunder, the Fortress of Zek · The Caverns of Exile · The Crypt of Decay · The Halls of Honor · The Lair of Terris Thule · The Plane of Air · and 17 more",
           "rows": 5,
           "stages": 5,
           "badgeCount": 5,
@@ -201,56 +201,56 @@
                   "name": "Thought Horror Overfiend",
                   "badge": null,
                   "stages": 1,
-                  "npcId": 164078,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "The Deep",
-                  "zoneId": 164,
-                  "zoneShort": "thedeep",
                   "level": 63,
-                  "how": null
+                  "how": null,
+                  "opens": null
                 },
                 {
                   "name": "The Insanity Crawler",
                   "badge": null,
                   "stages": 1,
-                  "npcId": 179180,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "The Akheva Ruins",
-                  "zoneId": 179,
-                  "zoneShort": "akheva",
-                  "level": 63,
-                  "how": null
+                  "level": 1,
+                  "how": null,
+                  "opens": null
                 },
                 {
                   "name": "Grieg Veneficus",
                   "badge": null,
                   "stages": 1,
-                  "npcId": 163057,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "Grieg's End",
-                  "zoneId": 163,
-                  "zoneShort": "griegsend",
                   "level": 65,
-                  "how": null
+                  "how": null,
+                  "opens": null
                 },
                 {
                   "name": "Xerkizh the Creator",
                   "badge": null,
                   "stages": 1,
-                  "npcId": 162190,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "Ssraeshza Temple",
-                  "zoneId": 162,
-                  "zoneShort": "ssratemple",
                   "level": 66,
-                  "how": null
+                  "how": null,
+                  "opens": null
                 },
                 {
                   "name": "Emperor Ssraeshza",
                   "badge": null,
                   "stages": 1,
-                  "npcId": 162227,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "Ssraeshza Temple",
-                  "zoneId": 162,
-                  "zoneShort": "ssratemple",
                   "level": 66,
-                  "how": null
+                  "how": null,
+                  "opens": null
                 }
               ]
             }
@@ -259,296 +259,296 @@
       ]
     },
     {
-      "id": "the-plane-of-time",
-      "name": "The Plane of Time",
-      "detail": "42 flags · 5 tiers",
+      "id": "the-road-to-time",
+      "name": "The road to Time",
+      "detail": "41 flags · 5 tiers",
       "chapters": [
         {
-          "id": "tier-1-the-first-planes",
-          "title": "Tier 1 — The First Planes",
-          "era": null,
-          "blurb": "Disease, Justice, Innovation and Nightmares — the four gates that open the climb.",
+          "id": "tier-1-the-first-four-planes",
+          "title": "The first four planes",
+          "era": "Tier I",
+          "blurb": "Disease, Justice, Innovation and Nightmares. Four short roads that run in parallel, and the only tier you can start the moment you arrive.",
           "opens": null,
-          "rows": 11,
-          "stages": 12,
+          "rows": 12,
+          "stages": 13,
           "badgeCount": 12,
           "groups": [
             {
-              "plane": "Plane of Disease",
-              "planeShort": "podisease",
+              "plane": "The Plane of Disease",
+              "planeShort": null,
               "steps": [
                 {
                   "name": "Adler Fuirstel",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Plane of Disease",
-                  "zoneId": null,
-                  "zoneShort": "podisease",
+                  "mob": null,
+                  "kind": "hail",
+                  "zone": "Plane of Tranquility",
                   "level": null,
-                  "how": "Hail him in the Plane of Tranquility, near the Plane of Disease portal (the faucet)."
+                  "how": "Hail him and hear him out. Nothing in the Plane of Disease will let you past the doorway without this.",
+                  "opens": "Entry to the Plane of Disease"
                 },
                 {
                   "name": "Grummus",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "Plane of Disease",
-                  "zoneId": null,
-                  "zoneShort": "podisease",
                   "level": null,
-                  "how": "Kill Gryme the Crypt Guardian atop the castle for Gryme's Crypt Key, open the castle door, kill Aramin the Spider Guardian, then clear your way to Grummus."
+                  "how": "Through the castle and down. He is the reason the zone exists.",
+                  "opens": null
                 },
                 {
                   "name": "Elder Fuirstel",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Plane of Disease",
-                  "zoneId": null,
-                  "zoneShort": "podisease",
+                  "mob": null,
+                  "kind": "hail",
+                  "zone": "Plane of Tranquility",
                   "level": null,
-                  "how": "Zone into the pit to reach Ruins of Lxanvom, return to Adler Fuirstel, then hail Elder Fuirstel in the Sick Bay (-286, -1407, -906)."
+                  "how": "Go back and hail the elder once Grummus is down.",
+                  "opens": "The Crypt of Decay opens from here"
                 }
               ]
             },
             {
-              "plane": "Plane of Justice",
-              "planeShort": "pojustice",
+              "plane": "The Plane of Justice",
+              "planeShort": null,
               "steps": [
                 {
                   "name": "Mavuin",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
+                  "mob": null,
+                  "kind": "hail",
                   "zone": "Plane of Justice",
-                  "zoneId": null,
-                  "zoneShort": "pojustice",
                   "level": null,
-                  "how": "Locate him in the basement of the Plane of Justice and hail him."
+                  "how": "Find him below and hail him. Every trial checks for this before it will speak to you.",
+                  "opens": "The six trials"
                 },
                 {
-                  "name": "Plead Mavuin's case",
+                  "name": "A trial before the Tribunal",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
+                  "mob": null,
+                  "kind": "event",
                   "zone": "Plane of Justice",
-                  "zoneId": null,
-                  "zoneShort": "pojustice",
                   "level": null,
-                  "how": "After your trial, tell The Tribunal \"I have come to plead the case of Mavuin.\" then return and hail Mavuin."
+                  "how": "Six trials, and you need one. Whichever you take sets the same flag, so pick the one your group can hold.",
+                  "opens": null
+                },
+                {
+                  "name": "Mavuin's case",
+                  "badge": null,
+                  "stages": 1,
+                  "mob": null,
+                  "kind": "hail",
+                  "zone": "Plane of Justice",
+                  "level": null,
+                  "how": "Return to Mavuin with the trial behind you.",
+                  "opens": "The Plane of Storms and the Plane of Valor"
                 }
               ]
             },
             {
-              "plane": "Plane of Innovation",
-              "planeShort": "poinnovation",
+              "plane": "The Plane of Innovation",
+              "planeShort": null,
               "steps": [
                 {
                   "name": "Xanamech Nezmirthafen",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
+                  "mob": null,
+                  "kind": "hail",
                   "zone": "Plane of Innovation",
-                  "zoneId": null,
-                  "zoneShort": "poinnovation",
                   "level": null,
-                  "how": "Loot Copper Node, Bundle of Super Conductive Wires and Intact Power Cell, give all three to Nitram Anizok and escort him. Stand behind Xanamech before he activates so his cone doesn't kill Nitram — then hail Nitram."
+                  "how": "Nitram Anizok has to survive the walk. Keep him out of what Xanamech is pointing at, then hail him.",
+                  "opens": "Entry to the Plane of Innovation"
                 },
                 {
-                  "name": "Manaetic Behemoth",
+                  "name": "The Manaetic Behemoth",
                   "badge": "2 stages",
                   "stages": 2,
-                  "npcId": null,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "Plane of Innovation",
-                  "zoneId": null,
-                  "zoneShort": "poinnovation",
                   "level": null,
-                  "how": "Hail Giwin Mirakon inside the factory, then kill clockwork devices for ~5 minutes until the Behemoth activates. Kill it and hail Giwin again."
+                  "how": "Giwin Mirakon starts it and finishes it. The Behemoth wakes on its own once the factory is stirred up.",
+                  "opens": null
                 }
               ]
             },
             {
-              "plane": "Plane of Nightmares",
-              "planeShort": "ponightmare",
+              "plane": "The Plane of Nightmares",
+              "planeShort": null,
               "steps": [
                 {
                   "name": "Adroha Jezith",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Plane of Nightmares",
-                  "zoneId": null,
-                  "zoneShort": "ponightmare",
+                  "mob": null,
+                  "kind": "hail",
+                  "zone": "Plane of Tranquility",
                   "level": null,
-                  "how": "Hail her in the Sick Bay (-253, -1415, -906) for the Hedge preflag."
+                  "how": "Hail her before you go anywhere near the hedge.",
+                  "opens": "Entry to the Plane of Nightmares"
                 },
                 {
                   "name": "A Construct of Nightmares",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
+                  "mob": null,
+                  "kind": "kill",
                   "zone": "Plane of Nightmares",
-                  "zoneId": null,
-                  "zoneShort": "ponightmare",
                   "level": null,
-                  "how": "Far northeast across the water, tell Thelin Poxbourne ready to enter the hedge maze. Kill the Construct, loot the Dagger Blade Shard and hail Thelin."
+                  "how": "Thelin Poxbourne opens the maze and takes the proof afterwards.",
+                  "opens": null
                 },
                 {
                   "name": "Terris Thule",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Plane of Nightmares",
-                  "zoneId": null,
-                  "zoneShort": "ponightmare",
+                  "mob": null,
+                  "kind": "kill",
+                  "zone": "The Lair of Terris Thule",
                   "level": null,
-                  "how": "Click the gate to her lair, fight to the building at the end of the path, and kill her."
+                  "how": "Behind her own gate, at the end of the path.",
+                  "opens": null
                 },
                 {
                   "name": "Elder Poxbourne",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Plane of Nightmares",
-                  "zoneId": null,
-                  "zoneShort": "ponightmare",
+                  "mob": null,
+                  "kind": "hail",
+                  "zone": "Plane of Tranquility",
                   "level": null,
-                  "how": "Return to the Sick Bay (-253, -1415, -906) and hail him."
+                  "how": "The last hail of the tier.",
+                  "opens": null
                 }
               ]
             }
           ]
         },
         {
-          "id": "tier-2-decay-torment-storms-valor",
-          "title": "Tier 2 — Decay, Torment, Storms & Valor",
-          "era": null,
-          "blurb": "The Carprin cycle, the Plaguebringer, Saryrn's tower, the storm giants and the prismatic dragon.",
+          "id": "tier-2-decay-torment-storms-and-valor",
+          "title": "Decay, Torment, Storms and Valor",
+          "era": "Tier II",
+          "blurb": "The Plaguebringer's crypt, Saryrn's tower, the giant camps and the prismatic dragon. Four zones that open together and can be run in any order.",
           "opens": null,
-          "rows": 8,
-          "stages": 13,
-          "badgeCount": 8,
+          "rows": 7,
+          "stages": 12,
+          "badgeCount": 7,
           "groups": [
             {
-              "plane": "Ruins of Lxanvom — Crypt of Decay",
-              "planeShort": "codecay",
+              "plane": "The Crypt of Decay",
+              "planeShort": null,
               "steps": [
                 {
-                  "name": "The Carprin Cycle",
+                  "name": "The Carprin line",
                   "badge": "2 stages",
                   "stages": 2,
-                  "npcId": null,
-                  "zone": "Ruins of Lxanvom — Crypt of Decay",
-                  "zoneId": null,
-                  "zoneShort": "codecay",
+                  "mob": null,
+                  "kind": "event",
+                  "zone": "The Crypt of Decay",
                   "level": null,
-                  "how": "Pull Carprin Deatharn's three guards off him and kill them first, then Carprin. Work through Avhi Escron, Bishop Toluwon, Raex Pwodill & Vindor Mawnil, then High Priest Uttor Szanvon. Don't kill Tarkil Adan — hail him."
+                  "how": "Work down the family. Tarkil Adan is the exception -- hail him, do not kill him.",
+                  "opens": null
                 },
                 {
-                  "name": "Bertoxxulous the Plaguebringer",
+                  "name": "Bertoxxulous",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Ruins of Lxanvom — Crypt of Decay",
-                  "zoneId": null,
-                  "zoneShort": "codecay",
+                  "mob": null,
+                  "kind": "kill",
+                  "zone": "The Crypt of Decay",
                   "level": null,
-                  "how": "Click the chair at the zone entrance, kill the Spectre of Corruption to start (2-hour timer), clear all twelve Adan kings, then kill Bertox. Hail Elder Fuirstel afterwards."
+                  "how": "The kings first, then the Plaguebringer himself.",
+                  "opens": "Torment, and the road on"
                 }
               ]
             },
             {
-              "plane": "Plane of Torment",
-              "planeShort": "potorment",
+              "plane": "Torment, the Plane of Pain",
+              "planeShort": null,
               "steps": [
                 {
                   "name": "Fahlia Shadyglade",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Plane of Torment",
-                  "zoneId": null,
-                  "zoneShort": "potorment",
+                  "mob": null,
+                  "kind": "hail",
+                  "zone": "Plane of Tranquility",
                   "level": null,
-                  "how": "Hail her in the Sick Bay (-292, -1362, -906) for the preflag."
+                  "how": "The preflag. Hail her before you set foot in Torment.",
+                  "opens": "Entry to Torment"
                 },
                 {
                   "name": "Tylis Newleaf",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Plane of Torment",
-                  "zoneId": null,
-                  "zoneShort": "potorment",
+                  "mob": null,
+                  "kind": "hail",
+                  "zone": "Torment",
                   "level": null,
-                  "how": "Build A Screaming Sphere from the four Orbs and the Mouths of Baraguj Szuul, reach Maareq the Prophet on the 5th floor, hail Tylis at the cages, then kill The Keeper of Sorrows and hail him again."
+                  "how": "He is caged partway up. Reach him, then deal with the Keeper of Sorrows and speak to him again.",
+                  "opens": null
                 },
                 {
                   "name": "Saryrn",
                   "badge": "2 stages",
                   "stages": 2,
-                  "npcId": null,
-                  "zone": "Plane of Torment",
-                  "zoneId": null,
-                  "zoneShort": "potorment",
+                  "mob": null,
+                  "kind": "kill",
+                  "zone": "Torment",
                   "level": null,
-                  "how": "Kill Saryrn along with her pet Sorrowsong and adds, then return and hail Tylis Newleaf followed by Fahlia Shadyglade."
+                  "how": "Saryrn and everything she brings with her, then back down the tower to report it.",
+                  "opens": null
                 }
               ]
             },
             {
-              "plane": "Plane of Storms",
-              "planeShort": "postorms",
+              "plane": "The Plane of Storms",
+              "planeShort": null,
               "steps": [
                 {
                   "name": "Askr the Lost",
                   "badge": "4 stages",
                   "stages": 4,
-                  "npcId": null,
-                  "zone": "Plane of Storms",
-                  "zoneId": null,
-                  "zoneShort": "postorms",
+                  "mob": null,
+                  "kind": "event",
+                  "zone": "The Plane of Storms",
                   "level": null,
-                  "how": "Loot the Storm Giant Head, Volaas Beard, Taarid Bone and Satuur Sash from the Hleyta, Jolna and Irmin camps, plus two Esoteric Medallions from different giants. Build Askr's Sealed Bag of Verity and the Esoteric Meld, and hand them to Askr."
+                  "how": "Four deliveries, gathered from the giant camps and handed over in pieces.",
+                  "opens": null
                 }
               ]
             },
             {
-              "plane": "Plane of Valor",
-              "planeShort": "povalor",
+              "plane": "The Plane of Valor",
+              "planeShort": null,
               "steps": [
                 {
                   "name": "Aerin`Dar",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Plane of Valor",
-                  "zoneId": null,
-                  "zoneShort": "povalor",
+                  "mob": null,
+                  "kind": "kill",
+                  "zone": "The Plane of Valor",
                   "level": null,
-                  "how": "Collect the three hearts and three Pieces of the Crystalline Globe, run the Paralin Notion → Aaramis Darylin → Ryglot Cupperhide chain for the Crystalline Globe, then port in and kill Aerin`Dar with his Mindless Minions and Rahlgon."
-                },
-                {
-                  "name": "Passage to the Halls of Honor",
-                  "badge": null,
-                  "stages": 1,
-                  "npcId": null,
-                  "zone": "Plane of Valor",
-                  "zoneId": null,
-                  "zoneShort": "povalor",
-                  "level": null,
-                  "how": "Click the trap door after Aerin`Dar falls and follow the path to zone into the Halls of Honor."
+                  "how": "The keyed fight at the top of the zone, and the trap door under it.",
+                  "opens": "The Halls of Honor"
                 }
               ]
             }
           ]
         },
         {
-          "id": "tier-3-thunder-honor-zek-the-tower",
-          "title": "Tier 3 — Thunder, Honor, Zek & the Tower",
-          "era": null,
-          "blurb": "Torden and the Halls of Honor, the Temple of Marr, the warlords of Drunder, then the Burning Prince.",
+          "id": "tier-3-thunder-honor-zek-and-the-tower",
+          "title": "Thunder, Honor, Zek and the Tower",
+          "era": "Tier III",
+          "blurb": "The long tier. Agnarr's bastion, three trials in the halls, the warlords of Drunder, and six floors of the Burning Prince's tower.",
           "opens": null,
           "rows": 16,
           "stages": 16,
@@ -556,207 +556,213 @@
           "groups": [
             {
               "plane": "Torden, Bastion of Thunder",
-              "planeShort": "bothunder",
+              "planeShort": null,
               "steps": [
                 {
                   "name": "Agnarr, the Storm Lord",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Torden, Bastion of Thunder",
-                  "zoneId": null,
-                  "zoneShort": "bothunder",
+                  "mob": "Agnarr",
+                  "kind": "kill",
+                  "zone": "Bastion of Thunder",
                   "level": null,
-                  "how": "Build the Enchanted Ring of Torden from the four wing gems, clear the four courtyard towers for their Spheres to make the Symbol of Torden, then ride the Lightning Sphere up. Kill Envyd Firestorm and Emmerick Skyfury — hailing Askr the Lost between floors — then Agnarr."
+                  "how": "Four wings, four courtyard towers, then the ride up.",
+                  "opens": null
                 },
                 {
                   "name": "Karana",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Torden, Bastion of Thunder",
-                  "zoneId": null,
-                  "zoneShort": "bothunder",
+                  "mob": null,
+                  "kind": "hail",
+                  "zone": "Bastion of Thunder",
                   "level": null,
-                  "how": "He spawns in the room at the top of the stairs once Agnarr is dead. Hail him and follow the dialog."
+                  "how": "He appears once Agnarr is finished. Hail him -- this one is a conversation, not a fight.",
+                  "opens": null
                 }
               ]
             },
             {
-              "plane": "Halls of Honor",
-              "planeShort": "hohonora",
+              "plane": "The Halls of Honor",
+              "planeShort": null,
               "steps": [
                 {
-                  "name": "Trial of Trydan Faye",
+                  "name": "The trial of Trydan Faye",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Halls of Honor",
-                  "zoneId": null,
-                  "zoneShort": "hohonora",
+                  "mob": null,
+                  "kind": "event",
+                  "zone": "The Halls of Honor",
                   "level": null,
-                  "how": "NE basement — hail Faye, kill the Custodian of Marr, then Rydda`Dar."
+                  "how": "North-east below. The custodian, then Rydda`Dar.",
+                  "opens": null
                 },
                 {
-                  "name": "Trial of Rhaliq Trell",
+                  "name": "The trial of Rhaliq Trell",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Halls of Honor",
-                  "zoneId": null,
-                  "zoneShort": "hohonora",
+                  "mob": null,
+                  "kind": "event",
+                  "zone": "The Halls of Honor",
                   "level": null,
-                  "how": "NW basement — protect the villagers in all three rooms from the named attackers, then hail Trell."
+                  "how": "North-west below. Three rooms of villagers, and they all have to live.",
+                  "opens": null
                 },
                 {
-                  "name": "Trial of Alekson Garn",
+                  "name": "The trial of Alekson Garn",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Halls of Honor",
-                  "zoneId": null,
-                  "zoneShort": "hohonora",
+                  "mob": null,
+                  "kind": "event",
+                  "zone": "The Halls of Honor",
                   "level": null,
-                  "how": "SE basement — protect the norrathian maidens from the crazed norrathians. Four mobs then a harder one per room; don't let any maiden die. Hail the Planar Projection."
+                  "how": "South-east below. Same shape, higher stakes -- lose one and the trial is lost.",
+                  "opens": null
                 }
               ]
             },
             {
-              "plane": "Temple of Marr",
-              "planeShort": "hohonorb",
+              "plane": "The Temple of Marr",
+              "planeShort": null,
               "steps": [
                 {
                   "name": "Lord Mithaniel Marr",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Temple of Marr",
-                  "zoneId": null,
-                  "zoneShort": "hohonorb",
+                  "mob": null,
+                  "kind": "kill",
+                  "zone": "The Temple of Marr",
                   "level": null,
-                  "how": "Kill Ralthazor, Champion of Marr to make Lord Marr targetable, clear his adds, then kill him."
+                  "how": "His champion has to fall before he can be touched.",
+                  "opens": "Drunder"
                 }
               ]
             },
             {
-              "plane": "Drunder, Fortress of Zek",
-              "planeShort": "potactics",
+              "plane": "Drunder, the Fortress of Zek",
+              "planeShort": null,
               "steps": [
                 {
                   "name": "Tallon Zek",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Drunder, Fortress of Zek",
-                  "zoneId": null,
-                  "zoneShort": "potactics",
+                  "mob": null,
+                  "kind": "kill",
+                  "zone": "Drunder",
                   "level": null,
-                  "how": "Locate and kill him; click the wall where he stood to zone out."
+                  "how": "One side of the fortress. The wall behind him is the way out.",
+                  "opens": null
                 },
                 {
                   "name": "Vallon Zek",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Drunder, Fortress of Zek",
-                  "zoneId": null,
-                  "zoneShort": "potactics",
+                  "mob": null,
+                  "kind": "kill",
+                  "zone": "Drunder",
                   "level": null,
-                  "how": "Opposite side of the zone from Tallon. Same exit trick — the panel on the wall."
+                  "how": "The other side, and the same trick to leave.",
+                  "opens": null
                 },
                 {
                   "name": "Rallos Zek the Warlord",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Drunder, Fortress of Zek",
-                  "zoneId": null,
-                  "zoneShort": "potactics",
+                  "mob": null,
+                  "kind": "kill",
+                  "zone": "Drunder",
                   "level": null,
-                  "how": "Kill Decorin Berik and Decorin Grunhork close together, refight Tallon and Vallon, then engage Rallos. He ports away at 50% — follow him down to the arena and finish him inside 30 minutes."
+                  "how": "Both sons again, then the father. He leaves the room partway through and you follow.",
+                  "opens": "The elemental planes, through Tranquility"
                 }
               ]
             },
             {
-              "plane": "Tower of Solusek Ro",
-              "planeShort": "solrotower",
+              "plane": "The Tower of Solusek Ro",
+              "planeShort": null,
               "steps": [
                 {
                   "name": "Xuzl",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Tower of Solusek Ro",
-                  "zoneId": null,
-                  "zoneShort": "solrotower",
+                  "mob": null,
+                  "kind": "kill",
+                  "zone": "The Tower of Solusek Ro",
                   "level": null,
-                  "how": "Wing mini-boss — a firepot returns you to the base of each wing."
+                  "how": "A wing boss. The firepots return you to the bottom.",
+                  "opens": null
                 },
                 {
                   "name": "Arlyxir",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Tower of Solusek Ro",
-                  "zoneId": null,
-                  "zoneShort": "solrotower",
+                  "mob": null,
+                  "kind": "kill",
+                  "zone": "The Tower of Solusek Ro",
                   "level": null,
-                  "how": "Wing mini-boss."
+                  "how": "A wing boss.",
+                  "opens": null
                 },
                 {
                   "name": "Jiva",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Tower of Solusek Ro",
-                  "zoneId": null,
-                  "zoneShort": "solrotower",
+                  "mob": null,
+                  "kind": "kill",
+                  "zone": "The Tower of Solusek Ro",
                   "level": null,
-                  "how": "Wing mini-boss."
+                  "how": "A wing boss.",
+                  "opens": null
                 },
                 {
                   "name": "Rizlona",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Tower of Solusek Ro",
-                  "zoneId": null,
-                  "zoneShort": "solrotower",
+                  "mob": null,
+                  "kind": "kill",
+                  "zone": "The Tower of Solusek Ro",
                   "level": null,
-                  "how": "Wing mini-boss."
+                  "how": "A wing boss.",
+                  "opens": null
                 },
                 {
                   "name": "The Protector of Dresolik",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Tower of Solusek Ro",
-                  "zoneId": null,
-                  "zoneShort": "solrotower",
+                  "mob": null,
+                  "kind": "kill",
+                  "zone": "The Tower of Solusek Ro",
                   "level": null,
-                  "how": "Wing mini-boss."
+                  "how": "The last wing boss.",
+                  "opens": null
                 },
                 {
                   "name": "Solusek Ro",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Tower of Solusek Ro",
-                  "zoneId": null,
-                  "zoneShort": "solrotower",
+                  "mob": null,
+                  "kind": "kill",
+                  "zone": "The Tower of Solusek Ro",
                   "level": null,
-                  "how": "Click the port in the middle of the main room and kill him. Then open the floor door and swim down the Lava Pit into the Plane of Fire — this grants access to the Elemental Planes."
-                },
+                  "how": "The middle of the tower, and the lava beneath it.",
+                  "opens": "The Plane of Fire"
+                }
+              ]
+            },
+            {
+              "plane": "The Plane of Knowledge",
+              "planeShort": null,
+              "steps": [
                 {
                   "name": "Grand Librarian Maelin",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Tower of Solusek Ro",
-                  "zoneId": null,
-                  "zoneShort": "solrotower",
+                  "mob": null,
+                  "kind": "hail",
+                  "zone": "Plane of Knowledge",
                   "level": null,
-                  "how": "A fallback — if elemental access didn't take, hail him in the Plane of Knowledge."
+                  "how": "A second door to the elements. If the tower did not give you the access it should have, he will.",
+                  "opens": null
                 }
               ]
             }
@@ -764,9 +770,9 @@
         },
         {
           "id": "tier-4-the-elemental-planes",
-          "title": "Tier 4 — The Elemental Planes",
-          "era": null,
-          "blurb": "Fire, Air, Water and both Earths. Each one also yields a component of the Time key.",
+          "title": "The elemental planes",
+          "era": "Tier IV",
+          "blurb": "Fire, Air, Water and both halves of Earth. Four bosses, five flags, and the pieces of the key you will need at the end of it.",
           "opens": null,
           "rows": 5,
           "stages": 5,
@@ -774,86 +780,115 @@
           "groups": [
             {
               "plane": "Doomfire, the Burning Land",
-              "planeShort": "pofire",
+              "planeShort": null,
               "steps": [
                 {
                   "name": "Fennin Ro, the Tyrant of Fire",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Doomfire, the Burning Land",
-                  "zoneId": null,
-                  "zoneShort": "pofire",
+                  "mob": "Fennin Ro",
+                  "kind": "kill",
+                  "zone": "The Plane of Fire",
                   "level": null,
-                  "how": "Four phases — the Guardian of Doomfire, then two named waves of four, then Fennin. Drops the Globe of Dancing Flame."
+                  "how": "A guardian, then waves, then the tyrant.",
+                  "opens": null
                 }
               ]
             },
             {
               "plane": "Eryslai, the Kingdom of Wind",
-              "planeShort": "poair",
+              "planeShort": null,
               "steps": [
                 {
                   "name": "Xegony, the Queen of Air",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Eryslai, the Kingdom of Wind",
-                  "zoneId": null,
-                  "zoneShort": "poair",
+                  "mob": "Xegony",
+                  "kind": "kill",
+                  "zone": "The Plane of Air",
                   "level": null,
-                  "how": "Hail Sarhya the Dawnbreeze for the Pouch of Swirling Winds, run the Stormrider, Elemental, Phoenix and Spider rings for the four Essences, and combine them into the Wind Etched Key. Xegony spawns adds at 98, 82, 66, 50, 34 and 18%. Drops the Amorphous Cloud of Air."
+                  "how": "Four rings for four essences, combined into the key that reaches her.",
+                  "opens": null
                 }
               ]
             },
             {
               "plane": "Reef of Coirnav",
-              "planeShort": "powater",
+              "planeShort": null,
               "steps": [
                 {
                   "name": "Coirnav, the Avatar of Water",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Reef of Coirnav",
-                  "zoneId": null,
-                  "zoneShort": "powater",
+                  "mob": "Coirnav",
+                  "kind": "kill",
+                  "zone": "The Plane of Water",
                   "level": null,
-                  "how": "Four waves — focus the small adds and ignore the named. Pwelon, Nrinda and Vamuil return in a much weaker form before Coirnav spawns. Drops the Sphere of Coalesced Water."
+                  "how": "Four waves. The small ones are the dangerous ones.",
+                  "opens": null
                 }
               ]
             },
             {
               "plane": "Vegarlson, the Earthen Badlands",
-              "planeShort": "poeartha",
+              "planeShort": null,
               "steps": [
                 {
                   "name": "A Mystical Arbitor of Earth",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Vegarlson, the Earthen Badlands",
-                  "zoneId": null,
-                  "zoneShort": "poeartha",
+                  "mob": null,
+                  "kind": "kill",
+                  "zone": "The Plane of Earth",
                   "level": null,
-                  "how": "Kill the crocodile Tantisala Jaggedtooth for the boss key, clear all four ring events (Rock Golem, Mud Golem, Vine, Elementals), then take the Arbitor at the bottom of the zone. Grants the Passkey of the Twelve."
+                  "how": "Four ring events across the badlands, then the arbitor at the bottom.",
+                  "opens": null
                 }
               ]
             },
             {
               "plane": "Ragrax, Stronghold of the Twelve",
-              "planeShort": "poearthb",
+              "planeShort": null,
               "steps": [
                 {
                   "name": "The Avatar of Earth",
                   "badge": null,
                   "stages": 1,
-                  "npcId": null,
-                  "zone": "Ragrax, Stronghold of the Twelve",
-                  "zoneId": null,
-                  "zoneShort": "poearthb",
+                  "mob": null,
+                  "kind": "kill",
+                  "zone": "The Stronghold of the Twelve",
                   "level": null,
-                  "how": "Clear both rooms, kill the three War Chieftains and Warlord Gintolaken, then the twelve Rathe Council members — six mezzable, six rootable. The Avatar spawns last and drops the Mound of Living Stone."
+                  "how": "The chieftains, the warlord, then the twelve of the Rathe Council. The avatar is last.",
+                  "opens": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tier-5-the-plane-of-time",
+          "title": "The Plane of Time",
+          "era": "Tier V",
+          "blurb": "One flag left, and it is a conversation rather than a fight. Everything above it was the price.",
+          "opens": null,
+          "rows": 1,
+          "stages": 1,
+          "badgeCount": 1,
+          "groups": [
+            {
+              "plane": "The Plane of Innovation",
+              "planeShort": null,
+              "steps": [
+                {
+                  "name": "Loreseeker Maelin",
+                  "badge": null,
+                  "stages": 1,
+                  "mob": null,
+                  "kind": "hail",
+                  "zone": "Plane of Innovation",
+                  "level": null,
+                  "how": "Follow him through and take the machine at the end. Past it is Time.",
+                  "opens": "The Plane of Time"
                 }
               ]
             }

@@ -25,7 +25,7 @@ const settings = (over: Partial<Settings> = {}): Settings => ({
 })
 
 function writeLog(character: string, ageMs = 0): string {
-  const path = join(dir, `eqlog_${character}_multiclass.txt`)
+  const path = join(dir, `eqlog_${character}_TSC.txt`)
   writeFileSync(path, `[Wed Aug 12 01:00:00 2026] You have entered The Bazaar.\r\n`)
   if (ageMs > 0) {
     const when = new Date(Date.now() - ageMs)
@@ -109,7 +109,7 @@ describe('choosing logs to tail', () => {
 
       // Parked logs out; its file stops being written.
       const old = new Date(Date.now() - 30 * HOUR)
-      utimesSync(join(dir, 'eqlog_Parked_multiclass.txt'), old, old)
+      utimesSync(join(dir, 'eqlog_Parked_TSC.txt'), old, old)
       // Hexzo is still playing.
       const now = new Date()
       utimesSync(hexzo, now, now)
@@ -127,7 +127,7 @@ describe('choosing logs to tail', () => {
     const w = silentWatcher()
     try {
       expect(w.start(settings()).sources).toHaveLength(2)
-      rmSync(join(dir, 'eqlog_Doomed_multiclass.txt'))
+      rmSync(join(dir, 'eqlog_Doomed_TSC.txt'))
       w.rescan()
       expect(w.status().sources.map((s) => s.character)).toEqual(['Hexzo'])
     } finally {
@@ -146,7 +146,7 @@ describe('choosing logs to tail', () => {
     try {
       w.start(settings({ watchedCharacters: ['Hexzo'] }))
       const old = new Date(Date.now() - 30 * HOUR)
-      utimesSync(join(dir, 'eqlog_Hexzo_multiclass.txt'), old, old)
+      utimesSync(join(dir, 'eqlog_Hexzo_TSC.txt'), old, old)
       w.rescan()
       expect(w.status().sources.map((s) => s.character)).toEqual(['Hexzo'])
     } finally {
@@ -196,7 +196,7 @@ describe('liveness', () => {
     const at = new Date(Date.now() - ageMs)
     const p = (n: number): string => String(n).padStart(2, '0')
     const stamp = `[Sun ${MON[at.getMonth()]} ${p(at.getDate())} ${p(at.getHours())}:${p(at.getMinutes())}:${p(at.getSeconds())} ${at.getFullYear()}]`
-    const path = join(dir, `eqlog_${character}_multiclass.txt`)
+    const path = join(dir, `eqlog_${character}_TSC.txt`)
     writeFileSync(path, `${stamp} You have entered The Bazaar.\r\n`)
     utimesSync(path, at, at)
   }

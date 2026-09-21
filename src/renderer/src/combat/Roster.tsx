@@ -58,7 +58,7 @@ export function Roster({
   /** Stable character order, so slot colors never shuffle. */
   order: string[]
   unit?: 'dps' | 'hps'
-  /** PTDex identities by name, for the class chips. */
+  /** Site identities by name, for the class chips. */
   known?: Record<string, Identity>
 }): JSX.Element {
   const [open, setOpen] = useState<string | null>(null)
@@ -124,7 +124,7 @@ export function Roster({
                 {row.skills.map((s) => (
                   <div className="rskill" key={s.name}>
                     {/* Weapon skills - slash, kick - are not spells and have no
-                        PTDex page, so only the named abilities get a card. */}
+                        site page, so only the named abilities get a card. */}
                     <span className="sname">
                       {isSpellName(s.name) ? <Tipped kind="spell" name={s.name} /> : s.name}
                     </span>

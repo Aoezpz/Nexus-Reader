@@ -20,7 +20,7 @@ function time(ts: number): string {
 }
 
 /**
- * A short, scannable description, with the parts PTDex knows about made
+ * A short, scannable description, with the parts the site knows about made
  * hoverable.
  *
  * Returning nodes rather than a string is what lets a spell name inside a

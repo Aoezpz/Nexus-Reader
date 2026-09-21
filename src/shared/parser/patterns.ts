@@ -696,7 +696,7 @@ const RULES: Rule[] = [
   // printed in exactly this wording.
   //
   // Why bother: a log never states what class anybody is, so knowing WHO is in
-  // the group is what lets the app go and ask PTDex. It also teaches the
+  // the group is what lets the app go and ask the site. It also teaches the
   // parser that those names are players, which changes how their damage is
   // counted.
   {

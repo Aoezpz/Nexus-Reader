@@ -8,7 +8,7 @@ import { clock } from '@shared/stats'
 import { summarizeZones, type ZonesData } from '@shared/zones'
 import { Aurora, Starfield } from '../components/Ambient'
 import { ClassChips } from '../components/Classes'
-import { Crest } from '../components/Crest'
+import phoenix from '../assets/phoenix-crest.png'
 
 const SLOT_VARS = ['var(--slot-1)', 'var(--slot-2)', 'var(--slot-3)']
 
@@ -167,12 +167,13 @@ export function Overview({
           <Aurora />
           <Starfield count={60} seed={7} />
           <div className="hero-inner">
-            <Crest size={140} />
-            <p className="eyebrow">Emu Multitool</p>
+            <img className="hero-phx" src={phoenix} alt="The Second Calling's phoenix" />
+            <p className="eyebrow">For The Second Calling</p>
             <h1>Read your logs. See your trio.</h1>
             <p className="lede">
               Nexus Reader tails the log files EverQuest already writes — a live meter, a fight timeline,
-              trigger alerts and progression, with nothing injected and nothing in your game folder touched.
+              trigger alerts and the road to Time, with nothing injected and nothing in your game folder
+              touched.
             </p>
             <div className="row" style={{ justifyContent: 'center', marginTop: 'var(--s-5)' }}>
               <button className="btn primary" type="button" onClick={onGoToPreferences}>
@@ -284,7 +285,7 @@ export function Overview({
                 </span>
               </button>
             ) : (
-              <div className="empty">Sync from PTDex on the Progression page to fill this in.</div>
+              <div className="empty">Sync from the site on the Progression page to fill this in.</div>
             )}
           </div>
         </section>

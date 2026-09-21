@@ -1,9 +1,9 @@
 # Nexus Reader — test build
 
-Thanks for trying this. It is an **emu multitool** for three-classes-in-one
-EverQuest emulator servers: it reads
+Thanks for trying this. It is **The Second Calling's log companion**: it reads
 the log file EverQuest already writes and turns it into a live DPS meter, fight
-history, alerts, loot and zone ledgers, timers and a few other things.
+history, alerts, the road to Time, the raid records, loot and zone ledgers,
+timers and a few other things.
 
 **It only ever reads.** Nothing is injected into EverQuest, no game file is
 touched, no memory is read, and nothing is played for you. Turn logging off and
@@ -13,7 +13,7 @@ the app has nothing to show. It also needs no admin rights.
 
 ## 1. Install
 
-Run **`Nexus-Reader-Setup-0.1.0.exe`**.
+Run **`Nexus-Reader-Setup-0.3.0.exe`**.
 
 Windows will say *"Windows protected your PC"* and offer only a **Don't run**
 button. Click **More info → Run anyway**.
@@ -53,10 +53,12 @@ Nothing appears in the app until you do this. It is the only setup step.
 
 ## 3. First run
 
-The app looks for `eqlog_<Character>_multiclass.txt` by itself and normally
-finds it. If it doesn't, open **Preferences → Log source** and either press
-**Auto-detect** or **Browse…** to your `…\Logs\` folder. It attaches straight
-away — no restart.
+The app looks for `eqlog_<Character>_TSC.txt` by itself and normally finds it.
+If it doesn't, open **Preferences → Log source** and either press
+**Auto-detect** or **Browse…** to your `…\TSC Client\Logs\` folder. It attaches
+straight away — no restart. If your log file's name ends in something other
+than `_TSC.txt`, put that ending in **Server shortname** on the same page —
+and please report it, because it means the guess was wrong.
 
 Then go and kill something. The **Combat** page fills in as the log is written.
 
@@ -69,7 +71,9 @@ Roughly in order of how likely something is to be wrong:
 | Where | What to check |
 |---|---|
 | **Combat** | Does the DPS number look right? Do your abilities and procs show up? Anything obviously missing from the breakdown? |
-| **Combat → the party strip** | Does it show the people you are actually grouped with — and *nobody else*? |
+| **Combat → the party strip** | Does it show the people you are actually grouped with — and *nobody else*? Do their classes match what tscemu.com says? |
+| **Progression** | Press **Sync from the site**. Does the page agree with your progression page on tscemu.com? A boss you killed reads *killed · flag unconfirmed* until the sync confirms it. |
+| **Leaderboards** | Does the Hall match tscemu.com/leaderboards/raids? |
 | **Loot / Zones / Mobs** | Do the totals match what you think happened? |
 | **Overlays** (`Overlay ▾`) | Do they stay on top of the game? Does a click on one leave your character running? |
 | **Alerts** | Make a rule, get it to fire, check the sound and speech. |
@@ -109,8 +113,11 @@ they should show as separate, not as a party.
   wrote to their log in the last two minutes. EverQuest writes nothing at all
   for someone standing still in an empty zone, so a character who is logged in
   but idle reads as quiet. Hover the word for when the game last wrote.
-- **World blessings can look empty or stale.** The server only announces one
-  when it is switched on or extended, and never says when it ends.
+- **World blessings, the census and the auction feed may be empty.** Those
+  readers were written against another server's broadcast lines and have not
+  been checked against a TSC log yet. If you see something on those tabs that
+  is wrong — or a broadcast in your log that never appears — that IS worth
+  reporting, with the line.
 - **Lifetime totals start at install** unless you press Rebuild from logs.
 - **Spawn windows are estimates** and say so — they are the shortest gap between
   two of your own kills, which is always longer than the real respawn.
@@ -149,4 +156,4 @@ a genuinely clean slate.
 
 ---
 
-*Version 0.1.0 · Windows x64 · unsigned test build*
+*Version 0.3.0 · Windows x64 · unsigned test build*

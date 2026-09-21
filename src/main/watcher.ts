@@ -48,7 +48,7 @@ const PRIMARY_STICKY_MS = 5 * 60 * 1000
  * Anyone with more than one trio - or more than one account - accumulates an
  * eqlog file for every character they have ever logged in, and they all sit in
  * the same folder forever. Tailing all of them put strangers in the party
- * strip, sent their names to PTDex, and handed one of them ownership of your
+ * strip, sent their names to the site, and handed one of them ownership of your
  * combat. A file the game has not written to since yesterday is history, not a
  * session.
  *

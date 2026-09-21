@@ -1,30 +1,50 @@
 import type { ParsedEvent } from './parser/types'
 
 /**
- * Plane of Time flagging.
+ * The road to the Plane of Time.
  *
  * The structure is bundled (see scripts/export-progression.mjs, which lifts it
- * from PTDex). The STATE is the app's own: a step is earned the moment its
- * boss dies in your log, which is what makes this live rather than a page you
- * refresh after a raid.
+ * from the server's website). The STATE is the app's own: a step is marked
+ * the moment its boss dies in your log, which is what makes this live rather
+ * than a page you refresh after a raid.
  *
- * Not every step is a kill. "Plead Mavuin's case" and "Passage to the Halls of
- * Honor" are things you do, and no log line reliably marks them - those are
- * ticked by hand, and the UI says so rather than pretending it detected them.
+ * Two things the structure is honest about, because the server is:
+ *
+ *   * **Not every step is a kill.** "Hail Adler Fuirstel" and "a trial before
+ *     the Tribunal" are things you do, and no log line reliably marks them -
+ *     those are ticked by hand, and the UI says so rather than pretending it
+ *     detected them.
+ *   * **A kill is not a flag.** On this server a gate boss killed outside a
+ *     progression instance grants nothing, and the site draws that as its own
+ *     state. So a mark that came from the log is shown as *killed*, and only
+ *     the site's sync or your own hand can say *flagged*. See `isConfirmed`.
  */
+
+/** What kind of thing a step is, which decides whether the log can see it. */
+export type StepKind = 'kill' | 'hail' | 'event'
 
 export interface ProgStep {
   name: string
   /** "2 stages" and similar, straight from the page. */
   badge: string | null
   stages: number
-  npcId: number | null
+  /**
+   * The name the log writes when the thing dies, where it differs from the
+   * step's own name - "Fennin Ro" for "Fennin Ro, the Tyrant of Fire". Null
+   * when they are the same.
+   */
+  mob: string | null
+  kind: StepKind
   zone: string | null
-  zoneId: number | null
-  zoneShort: string | null
   level: number | null
   /** How to get it, for the steps that aren't just "kill this". */
   how: string | null
+  /** What it unlocks, when the site says. */
+  opens: string | null
+  // Carried from the 0.2.0 data so an older bundled file still typechecks.
+  npcId?: number | null
+  zoneId?: number | null
+  zoneShort?: string | null
 }
 
 export interface ProgGroup {
@@ -59,8 +79,14 @@ export interface ProgressionData {
   sections: ProgSection[]
 }
 
-/** How a step came to be marked done. */
-export type ProgSource = 'log' | 'manual' | 'ptdex'
+/**
+ * How a step came to be marked.
+ *
+ * `log` is a kill the app saw - a strong hint, not a flag. `site` is what the
+ * server's website says the account holds. `manual` is your own hand.
+ * `ptdex` is what an older build wrote for a site sync, read as `site`.
+ */
+export type ProgSource = 'log' | 'manual' | 'site' | 'ptdex'
 
 export interface ProgMark {
   at: number
@@ -78,12 +104,29 @@ export function stepKey(chapterId: string, step: ProgStep): string {
 }
 
 /**
- * Steps that no log line announces. Detected by shape rather than a hardcoded
- * list: a step with no NPC behind it is something you do, not something you
- * kill, so it can only be ticked by hand.
+ * Steps that no log line announces - a hail, a trial, a delivery. They can
+ * only be ticked by hand or by the site. Older bundled data carried no kind
+ * and marked hails by having no NPC behind them; that reading is kept as the
+ * fallback.
  */
 export function isManualStep(step: ProgStep): boolean {
-  return step.npcId === null
+  if (step.kind) return step.kind !== 'kill'
+  return step.npcId === null || step.npcId === undefined
+}
+
+/**
+ * Is this mark the flag itself, or only the kill?
+ *
+ * The site and your own hand both say "flagged". The log says only "this
+ * died with you there", which on this server is not the same thing.
+ */
+export function isConfirmed(mark: ProgMark | undefined): boolean {
+  return !!mark && mark.source !== 'log'
+}
+
+/** The name the log will write when this step's boss dies. */
+export function mobName(step: ProgStep): string {
+  return (step.mob ?? step.name).toLowerCase()
 }
 
 /** Every step, flattened, with the chapter it belongs to. */
@@ -115,7 +158,7 @@ export function allSteps(data: ProgressionData): Array<{
 
 /**
  * Index of killable step names, lowercased, for O(1) lookup against every
- * death event. Built once and reused - a linear scan of 56 steps per kill line
+ * death event. Built once and reused - a linear scan of 57 steps per kill line
  * would be fine, but this also collapses the "which chapter was that" question
  * into the same lookup.
  */
@@ -123,7 +166,7 @@ export function buildKillIndex(data: ProgressionData): Map<string, string[]> {
   const index = new Map<string, string[]>()
   for (const { step, key } of allSteps(data)) {
     if (isManualStep(step)) continue
-    const name = step.name.toLowerCase()
+    const name = mobName(step)
     const keys = index.get(name)
     if (keys) keys.push(key)
     else index.set(name, [key])
@@ -135,7 +178,8 @@ export function buildKillIndex(data: ProgressionData): Map<string, string[]> {
  * Scan events for kills that complete a step.
  *
  * Returns only NEW marks, so the caller can tell the difference between "you
- * just flagged" - which is worth announcing - and "you killed Nagafen again".
+ * just killed a gate boss" - which is worth announcing - and "you killed
+ * Nagafen again".
  */
 export function detectProgress(
   events: ParsedEvent[],
@@ -166,6 +210,8 @@ export function detectProgress(
 export interface ProgressSummary {
   earned: number
   total: number
+  /** Of `earned`, how many are a kill the log saw and nothing more. */
+  unconfirmed: number
   /** Per-section and per-chapter tallies, for the headline and the rails. */
   sections: Array<{
     id: string
@@ -183,6 +229,7 @@ export function summarizeProgress(
   state: ProgressState,
   nextLimit = 6
 ): ProgressSummary {
+  let unconfirmed = 0
   const sections = data.sections.map((section) => {
     const chapters = section.chapters.map((chapter) => {
       let earned = 0
@@ -190,7 +237,11 @@ export function summarizeProgress(
       for (const group of chapter.groups) {
         for (const step of group.steps) {
           total += 1
-          if (state[stepKey(chapter.id, step)]) earned += 1
+          const mark = state[stepKey(chapter.id, step)]
+          if (mark) {
+            earned += 1
+            if (!isConfirmed(mark)) unconfirmed += 1
+          }
         }
       }
       return { id: chapter.id, title: chapter.title, earned, total }
@@ -214,6 +265,7 @@ export function summarizeProgress(
   return {
     earned: sections.reduce((n, s) => n + s.earned, 0),
     total: sections.reduce((n, s) => n + s.total, 0),
+    unconfirmed,
     sections,
     next
   }

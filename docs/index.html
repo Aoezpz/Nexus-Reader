@@ -3,22 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nexus Reader — an emu multitool for trio servers</title>
-<meta name="description" content="Reads the log file EverQuest already writes and turns it into a live DPS meter, fight history, alerts, loot and zone ledgers. It only ever reads.">
+<title>Nexus Reader — The Second Calling's log companion</title>
+<meta name="description" content="Reads the log file EverQuest already writes and turns it into a live DPS meter, fight history, alerts, the road to Time and the raid records. It only ever reads.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=IBM+Plex+Sans:wght@300;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  /* Tokens lifted from the app's own theme (src/shared/theme/theme.css), so the
-     page and the thing it is selling read as one product. */
+  /* Tokens lifted from the app's own theme (src/shared/theme/theme.css) -
+     which are the server website's own - so the page, the app and tscemu.com
+     read as one thing. The accent is silver and the red is the fire, for the
+     reason theme.css gives: red is the app's "you died" colour. */
   :root {
-    --void: #06070c; --abyss: #0a0c14;
-    --ink: #0f1319; --surface: #171c24; --surface-2: #1e242e;
-    --line: #2b3441; --line-2: #3a4552;
-    --gold: #ff8a4a; --gold-hi: #ffb289; --gold-deep: #b35422;
-    --arcane: #5aa0e0; --arcane-hi: #86c2ff;
-    --text: #ece5d6; --text-2: #b3b0a4; --muted: #8a8f98;
+    --void: #06090f; --abyss: #0b1120;
+    --ink: #0b1120; --surface: #111a2b; --surface-2: #18233a;
+    --line: #1b2738; --line-2: #2f4057;
+    --gold: #c9d6e6; --gold-hi: #f4f8fd; --gold-deep: #7f93ad;
+    --arcane: #ff5a63; --arcane-hi: #ff9aa2; --ember: #d0343f;
+    --text: #e8eef7; --text-2: #b3bfd0; --muted: #8c9aae;
     --good: #49d0a0; --warn: #e6b455;
-    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
-    --mono: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --serif: Cinzel, "Trajan Pro", "Palatino Linotype", Georgia, serif;
+    --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
   }
 
   *, *::before, *::after { box-sizing: border-box; }
@@ -30,7 +35,7 @@
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
-  a { color: var(--arcane-hi); }
+  a { color: var(--gold-hi); }
   code, kbd {
     font-family: var(--mono);
     font-size: 0.9em;
@@ -38,8 +43,9 @@
     border: 1px solid var(--line);
     border-radius: 4px;
     padding: 0.1em 0.4em;
+    color: var(--gold-hi);
   }
-  h1, h2, h3 { font-family: var(--serif); line-height: 1.2; }
+  h1, h2, h3 { font-family: var(--serif); line-height: 1.2; letter-spacing: 0.03em; }
 
   .wrap { max-width: 62rem; margin: 0 auto; padding: 0 1.25rem; }
   section { padding: 3.5rem 0; border-top: 1px solid var(--line); }
@@ -47,37 +53,37 @@
   h2 { font-size: 1.6rem; color: var(--gold-hi); margin: 0 0 0.35rem; }
   .sub { color: var(--muted); margin: 0 0 1.75rem; max-width: 60ch; }
 
-  /* ---- hero ---- */
-  .hero { position: relative; overflow: hidden; padding: 4.5rem 0 3.5rem; border-top: 0; }
-  .hero::before {
-    content: '';
-    position: absolute; inset: -40% -10% auto -10%; height: 70%;
-    background: radial-gradient(60% 60% at 30% 40%, rgba(255,138,74,0.13), transparent 70%),
-                radial-gradient(50% 50% at 75% 30%, rgba(90,160,224,0.11), transparent 70%);
-    filter: blur(20px);
-    pointer-events: none;
-  }
+  /* ---- hero: the site's moonrise banner, its black bars already cut away ---- */
+  .hero { position: relative; overflow: hidden; padding: 0 0 3.5rem; border-top: 0; background: var(--void); }
+  .hero .art { width: 100%; aspect-ratio: 2142 / 402; background: url('img/moonrise-banner.jpg') center / cover no-repeat; }
+  .hero .art::after { content: ''; position: absolute; left: 0; right: 0; top: 0; aspect-ratio: 2142 / 402; width: 100%; background: linear-gradient(180deg, rgba(6,9,15,0) 40%, var(--void)); pointer-events: none; }
+  .hero .wrap { position: relative; margin-top: -2.5rem; }
   .hero > * { position: relative; }
   .eyebrow {
-    text-transform: uppercase; letter-spacing: 0.22em;
-    font-size: 0.7rem; font-weight: 700; color: var(--muted); margin: 0 0 0.5rem;
+    font-family: var(--mono);
+    text-transform: uppercase; letter-spacing: 0.28em;
+    font-size: 0.66rem; font-weight: 500; color: var(--arcane-hi); margin: 0 0 0.5rem;
   }
-  .hero h1 { font-size: clamp(2.4rem, 6vw, 3.4rem); margin: 0 0 0.75rem; color: var(--gold-hi); }
+  .hero h1 { font-size: clamp(2.4rem, 6vw, 3.4rem); margin: 0 0 0.75rem; background: linear-gradient(180deg, #ffffff, #d6e0ec 46%, #8798b0); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .hero .lede { font-size: 1.15rem; color: var(--text-2); max-width: 46ch; margin: 0 0 1.75rem; }
 
   .cta { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
   .btn {
     display: inline-block;
     padding: 0.7rem 1.4rem;
-    border-radius: 8px;
+    border-radius: 4px;
+    font-family: var(--serif);
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
     font-weight: 700;
     text-decoration: none;
     border: 1px solid transparent;
   }
   .btn.primary {
-    background: linear-gradient(180deg, var(--gold), var(--gold-deep));
-    color: #1a0d05;
-    box-shadow: 0 6px 20px rgba(255,138,74,0.22);
+    background: linear-gradient(180deg, var(--gold-hi), var(--gold));
+    color: #0d0d12;
+    box-shadow: 0 6px 20px rgba(201,214,230,0.18);
   }
   .btn.ghost { border-color: var(--line-2); color: var(--text); }
   .btn:hover { filter: brightness(1.1); }
@@ -125,14 +131,14 @@
   }
   ol.steps > li:last-child { border-left-color: transparent; padding-bottom: 0; }
   ol.steps > li::before {
-    content: counter(s);
+    content: counter(s, upper-roman);
     position: absolute; left: -1rem; top: 0;
     width: 2rem; height: 2rem;
     display: grid; place-items: center;
     border-radius: 50%;
     background: var(--surface-2); border: 1px solid var(--line-2);
-    color: var(--gold-hi); font-weight: 700; font-size: 0.9rem;
-    font-family: var(--sans);
+    color: var(--arcane-hi); font-weight: 700; font-size: 0.85rem;
+    font-family: var(--serif);
   }
   ol.steps h3 { margin: 0.15rem 0 0.3rem; font-size: 1.05rem; }
   ol.steps p { margin: 0 0 0.5rem; color: var(--text-2); }
@@ -163,13 +169,14 @@
 <body>
 
 <header class="hero">
+  <div class="art" role="img" aria-label="The Second Calling's moonrise: a phoenix over a cold valley"></div>
   <div class="wrap">
-    <p class="eyebrow">Emu Multitool</p>
+    <p class="eyebrow">The Second Calling · log companion</p>
     <h1>Nexus Reader</h1>
     <p class="lede">
-      A desktop companion for three-classes-in-one EverQuest emulator servers. It reads the log
+      A desktop companion for <a href="https://tscemu.com">The Second Calling</a>. It reads the log
       file the game already writes and turns it into a live DPS meter, fight history, trigger
-      alerts, and a ledger of everywhere you have been.
+      alerts, the road to the Plane of Time, and the Hall's raid records.
     </p>
 
     <div class="cta">
@@ -206,15 +213,15 @@
       </div>
       <div class="card">
         <h3>Server</h3>
-        <p>World blessings with live countdowns, who is levelling and arriving, and the auction traffic going past.</p>
+        <p>The auction and grouping traffic going past, and <b>Tonight</b> — the site's own standings, thirty-day feed and chronicle of firsts, with the souls in the world in the title bar.</p>
       </div>
       <div class="card">
         <h3>Leveling &amp; Progression</h3>
-        <p>Levels, ability points and kill rate per character. Expansion gates and Plane of Time flags tick the moment the boss dies in your log.</p>
+        <p>Levels, ability points and kill rate per character. The four doors and forty-one flags to Time: a kill is marked the moment the boss dies in your log, and a sync from the site is what confirms the flag — because here a kill outside an instance grants nothing.</p>
       </div>
       <div class="card">
         <h3>Leaderboards</h3>
-        <p>The server's raid boards — first clears, fastest kills, highest DPS, by bracket. Read-only; the app never submits anything.</p>
+        <p>The Hall's raid records — first clear, fastest kill and top DPS for every encounter, at every party size. Read-only; the app never submits anything.</p>
       </div>
       <div class="card">
         <h3>Zones, Mobs &amp; Loot</h3>
@@ -269,8 +276,8 @@
       <li>
         <h3>Go and kill something</h3>
         <p>
-          The app finds <code>eqlog_&lt;Character&gt;_multiclass.txt</code> by itself. If your
-          install lives somewhere unusual, point it at the right folder in <b>Preferences</b> and it
+          The app finds <code>eqlog_&lt;Character&gt;_TSC.txt</code> by itself. If your install
+          lives somewhere unusual, point it at the right folder in <b>Preferences</b> and it
           attaches immediately — no restart. The Combat page fills in as the log is written.
         </p>
         <p class="meta">
@@ -292,8 +299,9 @@
       <li><b>No buff durations.</b> The log never states one. The buff board shows what is on you and how long it has been there, not how long is left.</li>
       <li><b>No spawn timers, only estimates.</b> A respawn window here is the shortest gap between two of your own kills, which is always longer than the real timer. It says so on the page.</li>
       <li><b>"Quiet" is not "offline".</b> EverQuest writes nothing for a character standing still in an empty zone, so silence is not proof of a logout and the app will not claim one.</li>
-      <li><b>No leaderboard submissions.</b> The game server records ranked clears itself. This only reads the boards.</li>
-      <li><b>No guessing at flags it cannot see.</b> Steps no log line announces are marked by hand and say so.</li>
+      <li><b>No leaderboard submissions.</b> The game server records every clear itself. This only reads the records.</li>
+      <li><b>No calling a kill a flag.</b> The log proves a boss died with you there; on this server that is not the same as being flagged, so the page says <em>killed</em> until the site says <em>flagged</em>.</li>
+      <li><b>No guessing at flags it cannot see.</b> Hails and trials that no log line announces are marked by hand and say so.</li>
     </ul>
   </div>
 </section>

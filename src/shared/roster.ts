@@ -7,10 +7,10 @@
  * a row reading 22.8k means one thing for a War/Rng/Brd and quite another for a
  * Wiz/Mag/Nec, and you cannot tell which you are looking at.
  *
- * PTDex knows, because the game server tells it. So identity is looked up by
- * name and cached here, and every name the app can honestly call a player - your
- * own boxes, and anyone the log has placed in your group - gets a class line
- * next to it.
+ * The server's website knows, because the game server tells it. So identity is
+ * looked up by name and cached here, and every name the app can honestly call
+ * a player - your own boxes, and anyone the log has placed in your group - gets
+ * a class line next to it.
  *
  * The cache is deliberately name-keyed rather than id-keyed: names are what the
  * log gives us, and on one server they are unique.
@@ -64,7 +64,18 @@ export const CLASS_ORDER = [
   'Rog', 'Shm', 'Nec', 'Wiz', 'Mag', 'Enc', 'Bst', 'Ber'
 ] as const
 
-/** Class abbreviations exactly as PTDex writes them in a character row. */
+/**
+ * The site's own three-letter codes, in the same order. Its feed and its
+ * records write these (`["WAR", "PAL", "MNK"]`); its character rows and class
+ * chips write the full names. Both are folded to the app's abbreviations by
+ * `abbrevOf`, so the rest of the app only ever sees one spelling.
+ */
+const SITE_CODES = [
+  'WAR', 'CLR', 'PAL', 'RNG', 'SHD', 'DRU', 'MNK', 'BRD',
+  'ROG', 'SHM', 'NEC', 'WIZ', 'MAG', 'ENC', 'BST', 'BER'
+] as const
+
+/** The app's abbreviations, and the full names they stand for. */
 export const CLASS_NAMES: Record<string, string> = {
   War: 'Warrior',
   Clr: 'Cleric',
@@ -134,16 +145,43 @@ export function classColor(abbrev: string): string {
   return CLASS_COLOR[abbrev] ?? 'var(--muted)'
 }
 
-/** What PTDex knows about one character. */
+/**
+ * Fold any spelling of a class the site uses into the app's abbreviation.
+ *
+ * "Warrior", "warrior", "WAR", "Shadowknight", "Shadow Knight", "SHD" and
+ * "SK" all come back as the one the chips are keyed on. Letters only are
+ * compared, so the space in the app's "Shadow Knight" and the absence of one
+ * in the site's "Shadowknight" are not a disagreement. Null for anything else,
+ * so a stray word never becomes a chip.
+ */
+export function abbrevOf(spelling: string): string | null {
+  const key = spelling.replace(/[^a-z]/gi, '').toLowerCase()
+  if (!key) return null
+  const i = LOOKUP.get(key)
+  return i === undefined ? null : CLASS_ORDER[i]
+}
+
+const LOOKUP = new Map<string, number>()
+CLASS_ORDER.forEach((abbrev, i) => {
+  LOOKUP.set(abbrev.toLowerCase(), i)
+  LOOKUP.set(SITE_CODES[i].toLowerCase(), i)
+  LOOKUP.set(CLASS_NAMES[abbrev].replace(/[^a-z]/gi, '').toLowerCase(), i)
+})
+
+/** What the server's website knows about one character. */
 export interface Identity {
   name: string
-  id: number | null
+  /**
+   * The site's key for the character - the name as it appears in the URL,
+   * since the site addresses characters by name. Null when never found.
+   */
+  id: string | null
   level: number | null
   race: string | null
   /** `['War', 'Rng', 'Brd']`, in the order the site lists them. */
   classes: string[]
   guild: string | null
-  /** PTDex's own player score, and where it puts them. */
+  /** The site's gear score, and where it puts them. */
   score: number | null
   /** Rank among characters running this exact trio, and how many that is. */
   trioRank: number | null
@@ -152,10 +190,10 @@ export interface Identity {
   /** Epoch ms of the lookup that produced this. */
   fetchedAt: number
   /**
-   * False when PTDex has no character by that exact name. Cached too, and on a
-   * shorter clock - a name that isn't on the site should not be re-requested
-   * every fight, but it should be retried eventually because new characters
-   * appear.
+   * False when the site has no character by that exact name. Cached too, and
+   * on a shorter clock - a name that isn't on the site should not be
+   * re-requested every fight, but it should be retried eventually because new
+   * characters appear.
    */
   found: boolean
 }

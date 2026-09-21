@@ -30,7 +30,7 @@ beforeAll(() => {
   // Session one, 01:00 - Hexzo solo. A mob hits back, which is the line that
   // only survives if Hexzo owns third-party events in this session.
   writeFileSync(
-    join(dir, 'eqlog_Hexzo_multiclass.txt'),
+    join(dir, 'eqlog_Hexzo_TSC.txt'),
     [
       `${stamp(1, 0, 0)} You have entered Drunder, the Fortress of Zek.`,
       `${stamp(1, 0, 1)} You hit Diaku Guardian for 1000 points of damage.`,
@@ -46,7 +46,7 @@ beforeAll(() => {
   // single-primary replay this character's combat would be discarded, because
   // the owner picked for the folder was not present for any of it.
   writeFileSync(
-    join(dir, 'eqlog_Confucius_multiclass.txt'),
+    join(dir, 'eqlog_Confucius_TSC.txt'),
     [
       `${stamp(5, 0, 0)} You have entered The Bazaar.`,
       `${stamp(5, 0, 1)} You hit a Gladiator for 500 points of damage.`,

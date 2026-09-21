@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
+  isConfirmed,
   isManualStep,
   stepKey,
   type ProgChapter,
@@ -12,11 +13,17 @@ import { Aurora, Starfield } from '../components/Ambient'
 /**
  * Flagging, live.
  *
- * The structure comes from PTDex; the state is the app's own and updates the
- * moment a gate boss dies in your log. Steps that no log line announces - the
- * "go and say this to that NPC" ones - are ticked by hand and labelled as
- * such, because a tracker that silently guesses is worse than one that admits
- * what it cannot see.
+ * The structure comes from the server's website; the state is the app's own
+ * and updates the moment a gate boss dies in your log. Two honesties on this
+ * page, both the server's before they are the app's:
+ *
+ *   * Steps that no log line announces - the "go and hail that NPC" ones -
+ *     are ticked by hand and labelled as such, because a tracker that
+ *     silently guesses is worse than one that admits what it cannot see.
+ *   * A kill is not a flag. A gate boss killed outside a progression instance
+ *     grants nothing on this server, so a mark the log made is drawn as
+ *     KILLED, and only a sync from the site - or your own hand - turns it into
+ *     FLAGGED. The page counts both, and says how many are which.
  */
 export function Progression(): JSX.Element {
   const [data, setData] = useState<ProgressionData | null>(null)
@@ -100,9 +107,12 @@ export function Progression(): JSX.Element {
           </div>
 
           <div className="ph-copy">
-            <p className="eyebrow">planar ascension</p>
+            <p className="eyebrow">the long road</p>
             <h1>The Road</h1>
-            <p className="lede">Expansion gates and the Plane of Time, tracked from your logs as you earn them.</p>
+            <p className="lede">
+              Four doors and forty-one flags, ending at the Plane of Time. Kills are read from your logs as
+              they happen; the flags themselves are the account&apos;s, and the site is what confirms them.
+            </p>
             <div className="ph-tally">
               {summary.sections.map((s) => (
                 <div className="t" key={s.id}>
@@ -117,6 +127,12 @@ export function Progression(): JSX.Element {
                 <span className="n num">{summary.total - summary.earned}</span>
                 <span className="l">Remaining</span>
               </div>
+              {summary.unconfirmed > 0 && (
+                <div className="t" title="Killed in your log, not yet confirmed as a flag by the site. Sync to check.">
+                  <span className="n num warn">{summary.unconfirmed}</span>
+                  <span className="l">Killed, unconfirmed</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -141,18 +157,19 @@ export function Progression(): JSX.Element {
               type="button"
               style={{ height: '1.5rem', fontSize: '0.7rem' }}
               disabled={syncing}
-              title="Read flags and levels for your characters from PTDex"
+              title="Read the account's flags and your characters' levels from the server's website"
               onClick={() => {
                 setSyncing(true)
                 setSyncNote(null)
                 void window.triune
-                  .invoke('ptdex:sync')
+                  .invoke('site:sync')
                   .then((r) => {
                     if (r.summary) setSummary(r.summary)
                     if (r.state) setState(r.state)
                     const ok = r.characters.filter((c) => c.found)
                     const bad = r.characters.filter((c) => !c.found)
                     const unknown = r.characters.flatMap((c) => c.unknownSteps)
+                    const unflagged = Math.max(0, ...r.characters.map((c) => c.killedUnflagged))
                     setSyncNote(
                       [
                         ok.length > 0
@@ -160,6 +177,9 @@ export function Progression(): JSX.Element {
                           : null,
                         bad.length > 0
                           ? `Couldn't sync ${bad.map((c) => `${c.name} — ${c.error ?? 'not found'}`).join('; ')}`
+                          : null,
+                        unflagged > 0
+                          ? `The site has ${unflagged} gate kill${unflagged === 1 ? '' : 's'} on record that the account is not flagged for — killed outside a progression instance.`
                           : null,
                         unknown.length > 0
                           ? `${unknown.length} step(s) on the site aren't in the bundled data: ${unknown.slice(0, 3).join(', ')}${unknown.length > 3 ? '…' : ''}`
@@ -172,7 +192,7 @@ export function Progression(): JSX.Element {
                   .finally(() => setSyncing(false))
               }}
             >
-              {syncing ? 'Syncing…' : 'Sync from PTDex'}
+              {syncing ? 'Syncing…' : 'Sync from the site'}
             </button>
             <button
               className={confirmReset ? 'btn danger' : 'btn'}
@@ -270,10 +290,19 @@ export function Progression(): JSX.Element {
                           const earned = !!mark
                           if (onlyRemaining && earned) return null
                           const manual = isManualStep(step)
+                          // Three states, not two: nothing, a kill the log saw,
+                          // and a flag the site or your own hand confirmed.
+                          const confirmed = isConfirmed(mark)
+                          const how =
+                            mark?.source === 'log'
+                              ? 'killed in your log'
+                              : mark?.source === 'manual'
+                                ? 'ticked by hand'
+                                : 'flagged on the account, per the site'
 
                           return (
                             <div
-                              className={`pc-st${earned ? ' on' : ''}${justFlagged.includes(key) ? ' fresh' : ''}`}
+                              className={`pc-st${earned ? (confirmed ? ' on' : ' killed') : ''}${justFlagged.includes(key) ? ' fresh' : ''}`}
                               key={key}
                             >
                               <button
@@ -282,31 +311,45 @@ export function Progression(): JSX.Element {
                                 aria-pressed={earned}
                                 title={
                                   earned
-                                    ? `Earned ${mark.source === 'log' ? 'from your log' : 'by hand'}${
-                                        mark.by ? ` (${mark.by})` : ''
-                                      } — click to clear`
-                                    : 'Mark as earned'
+                                    ? `${how[0].toUpperCase()}${how.slice(1)}${mark.by ? ` (${mark.by})` : ''} — click to clear`
+                                    : 'Mark as flagged'
                                 }
                                 onClick={() => void toggle(key, !earned)}
                               >
-                                {earned ? '✓' : ''}
+                                {earned ? (confirmed ? '✓' : '•') : ''}
                               </button>
                               <div className="pc-tx">
                                 <div className="pc-nm">
                                   {step.name}
                                   {step.badge && <span className="stage">{step.badge}</span>}
                                   {manual && !earned && (
-                                    <span className="byhand" title="No log line announces this one">
-                                      by hand
+                                    <span
+                                      className="byhand"
+                                      title={
+                                        step.kind === 'hail'
+                                          ? 'A hail, not a kill — no log line announces it'
+                                          : 'No log line announces this one'
+                                      }
+                                    >
+                                      {step.kind === 'hail' ? 'hail · by hand' : 'by hand'}
+                                    </span>
+                                  )}
+                                  {earned && !confirmed && (
+                                    <span
+                                      className="unconfirmed"
+                                      title="The log saw this die with you there. On this server a kill outside a progression instance grants no flag, so it is not counted as one until the site says so. Sync to check."
+                                    >
+                                      killed · flag unconfirmed
                                     </span>
                                   )}
                                 </div>
                                 {step.how && <div className="pc-how">{step.how}</div>}
-                                {(step.zone || step.level) && (
+                                {(step.zone || step.level || step.opens) && (
                                   <div className="pc-where">
                                     {step.zone}
                                     {step.level ? <span className="lv">lvl {step.level}</span> : null}
                                     {step.zoneShort ? <span className="sh">{step.zoneShort}</span> : null}
+                                    {step.opens ? <span className="opens">⚑ {step.opens}</span> : null}
                                   </div>
                                 )}
                               </div>

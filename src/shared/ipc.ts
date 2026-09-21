@@ -9,6 +9,7 @@ import type { MobsData } from './mobs'
 import type { ParsedEvent } from './parser/types'
 import type { ProgressState, ProgressSummary, ProgressionData } from './progression'
 import type { RosterState } from './roster'
+import type { ChampionsResult, WorldStatus } from './site'
 import type { FightSummary } from './stats'
 import type { UpdateStatus } from './update'
 import { DEFAULT_THEME } from './themes'
@@ -23,6 +24,19 @@ import type { ZonesData } from './zones'
  * preload bridge, the main-process handlers and the renderer hook all typecheck
  * against these shapes.
  */
+
+/** The site the defaults point at. */
+export const SITE_DEFAULT = 'https://tscemu.com'
+
+/**
+ * What the defaults were before 0.3.0 moved the app to The Second Calling.
+ *
+ * A stored value that still equals one of these was never chosen by anybody -
+ * it is the old default, written out by an earlier build - so settings.ts
+ * moves it to the new default on load. A value that differs was typed by a
+ * person and is left alone.
+ */
+export const LEGACY_DEFAULTS = { ptdexBase: 'https://nms.bestemu.com', serverShortname: 'multiclass' }
 
 /** Where the app looks for logs and how it decides a fight is over. */
 export interface Settings {
@@ -52,8 +66,12 @@ export interface Settings {
   /** Seconds of silence that end a fight. */
   fightTimeoutSeconds: number
   /**
-   * Base URL of the PTDex site. Empty disables every network feature and the
-   * app runs entirely on its bundled data.
+   * Base URL of the server's website. Empty disables every network feature
+   * and the app runs entirely on its bundled data.
+   *
+   * The KEY is still `ptdexBase`, from the site the app was first pointed at.
+   * Renaming it would orphan every stored settings file for a word nobody on
+   * screen ever sees; read it as "site base".
    */
   ptdexBase: string
   /**
@@ -91,12 +109,16 @@ export const DEFAULT_SETTINGS: Settings = {
   primaryCharacter: '',
   activeCharacter: '',
   fightTimeoutSeconds: 8,
-  // A PTDex deployment - the item and spell database this app can pull
-  // tooltips from. It is a DATA SOURCE, not a dependency: clear the field and
+  // The Second Calling's website - characters, progression, the raid boards
+  // and item cards. It is a DATA SOURCE, not a dependency: clear the field and
   // every network feature switches off, leaving the app running on its bundled
   // data. Point it at whatever your server publishes, or at nothing.
-  ptdexBase: 'https://nms.bestemu.com',
-  serverShortname: 'multiclass',
+  ptdexBase: SITE_DEFAULT,
+  // The loginserver's short name, as the client writes it into
+  // `eqlog_<Char>_<shortname>.txt`. Read off the TSC client's own per-character
+  // files (`<Char>_TSC.ini`), which are named after the same value. Matched
+  // case-insensitively against the filename.
+  serverShortname: 'TSC',
   lastPage: 'overview',
   combatView: 'dashboard',
   // The market, because it is the tab that changes while you are looking at it.
@@ -188,14 +210,17 @@ export interface OverlayBounds {
   height: number
 }
 
-/** Outcome of a PTDex sync, per character, reported honestly. */
-export interface PtdexSyncResult {
+/** Outcome of a site sync, per character, reported honestly. */
+export interface SiteSyncResult {
   characters: Array<{
     name: string
     found: boolean
-    id: number | null
+    /** The site's key for the character - its name in the URL. */
+    id: string | null
     level: number | null
     earned: number
+    /** Gate bosses the site has a kill on record for that the account is not flagged for. */
+    killedUnflagged: number
     error: string | null
     /** Steps the site shows earned that our bundled data has no entry for. */
     unknownSteps: string[]
@@ -228,11 +253,15 @@ export interface InvokeMap {
   'progress:get': [void, { data: ProgressionData; state: ProgressState; summary: ProgressSummary }]
   'progress:set': [{ key: string; earned: boolean }, ProgressSummary]
   'progress:reset': [void, ProgressSummary]
-  /** Pull flags and levels for the watched characters off PTDex. */
-  'ptdex:sync': [void, PtdexSyncResult]
-  /** Who everyone is: classes, level, guild and rank, cached from PTDex. */
+  /** Pull flags and levels for the watched characters off the server's website. */
+  'site:sync': [void, SiteSyncResult]
+  /** Souls in the world, from the site. Null when unreachable or not configured. */
+  'site:world': [void, WorldStatus | null]
+  /** Who holds the boards and what happened lately, from the site. */
+  'site:champions': [{ force?: boolean } | void, ChampionsResult]
+  /** Who everyone is: classes, level, score and rank, cached from the site. */
   'roster:get': [void, RosterState]
-  /** Re-read these names from PTDex, ignoring the cache. Empty means everyone. */
+  /** Re-read these names from the site, ignoring the cache. Empty means everyone. */
   'roster:refresh': [{ names?: string[] } | void, RosterState]
   'leaderboard:get': [{ force?: boolean } | void, LeaderboardResult]
   'loot:get': [void, LootData]
@@ -266,7 +295,7 @@ export interface InvokeMap {
     { rule: AlertRule; sample: string },
     { matched: boolean; groups: string[]; speech: string | null }
   ]
-  /** An item or spell hover card, read from PTDex and cached. */
+  /** An item or spell hover card, read from the site and cached. */
   'tooltip:get': [{ kind: TipKind; name: string }, TipResult]
   /** Open a URL in the user's browser, never in-app. */
   'shell:open': [string, void]

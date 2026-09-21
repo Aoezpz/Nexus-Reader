@@ -1,11 +1,14 @@
 @import './fonts.css';
 
 /* ============================================================
-   Nexus Reader - "Obelisk"
+   Nexus Reader - "The Second Calling"
 
-   A near black violet ground, an aurora band across the header, a broken ring
-   that actually turns, hairline rules with diamond caps, and glow reserved for
-   things that are genuinely live.
+   The server's own palette, carried into the app: an onyx-navy
+   ground, silver lettering, and red kept for the fire - the filament under
+   the title bar, the diamond caps, the coals behind an empty state. An
+   aurora band across the header, a broken ring that actually turns, hairline
+   rules with diamond caps, and glow reserved for things that are genuinely
+   live.
 
    The rule that governs all of it:
 
@@ -13,6 +16,15 @@
 
    Chrome may shimmer. Damage rows may not - twelve glowing bars are twelve
    unreadable bars, and this window is operated, not admired.
+
+   WHY THE ACCENT IS SILVER AND NOT THE SITE'S RED. --bad, the colour that
+   marks a death inline in a damage row, is #e0645c - eleven degrees of hue
+   from the site's #d0343f. An accent that close to it would make the active
+   nav item and "you died" the same colour at different lightness, and a
+   status hue must never be a decorative choice. So the site's silver carries
+   the accent (active nav, the primary button, "you") and its red stays in
+   the chrome, which is also how the site itself spends it. Every value below
+   is the site's own, from its stylesheet, not an approximation.
 
    Chart series colors do NOT live here: the accent is an accent, and an
    accent makes a bad categorical ramp. See charts.css.
@@ -22,27 +34,27 @@
    stylesheet. The values are gone; the names stayed because they are threaded
    through several thousand lines of CSS and a rename buys nothing a reader
    cannot get from this paragraph. Read --gold as "accent", --arcane as
-   "secondary accent".
+   "secondary accent", --ember as "the fire".
    ============================================================ */
 
 :root {
   /* ---- Brand ---- */
-  --ink: #15111f; --ink-2: #0f0c18;
-  --surface: #15111f; --surface-2: #1d1729; --surface-3: #252036;
-  --line: #2a2338; --line-2: #352c47;
-  --gold: #a855f7; --gold-hi: #c9a2ff; --gold-deep: #7c3aed;
-  --arcane: #56b8e0; --arcane-hi: #8fd8f5;
-  --ember: #8b6ce8;
-  --text: #ece9f2; --text-2: #a29bb0; --muted: #6f6880;
+  --ink: #0b1120; --ink-2: #080d18;
+  --surface: #111a2b; --surface-2: #18233a; --surface-3: #1f2d47;
+  --line: #1b2738; --line-2: #2f4057;
+  --gold: #c9d6e6; --gold-hi: #f4f8fd; --gold-deep: #7f93ad;
+  --arcane: #ff5a63; --arcane-hi: #ff9aa2;
+  --ember: #d0343f;
+  --text: #e8eef7; --text-2: #b3bfd0; --muted: #8c9aae;
 
-  /* ---- Depth: a ground darker than any panel, so the violet reads as lit
-     stone rather than as a web accent ---- */
-  --void: #0a0810;
-  --abyss: #120e1b;
+  /* ---- Depth: a ground darker than any panel, so the silver reads as lit
+     steel rather than as a web accent ---- */
+  --void: #06090f;
+  --abyss: #0b1120;
 
-  --nms-sans: Manrope, "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  --nms-sans: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
   --nms-serif: Cinzel, "Trajan Pro", "Palatino Linotype", Georgia, serif;
-  --nms-mono: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
+  --nms-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
 
   /* 4px-based spacing scale, in rem so it tracks the reader's font size */
   --s-1: 0.25rem; --s-2: 0.5rem;  --s-3: 0.75rem; --s-4: 1rem;
@@ -80,11 +92,13 @@
 
   /* Ambient layers. Tokens rather than literals so a scheme can retune the
      atmosphere - these three blurred blobs are the largest colored area in
-     the app, and a scheme that left them behind would only be half applied. */
-  --aurora-1: #6d28d9;
-  --aurora-2: #a855f7;
-  --aurora-3: #2f6fb8;
-  --star: #d3b8ff;
+     the app, and a scheme that left them behind would only be half applied.
+     In Moonrise the aurora is coals: the site's blood and its deep red, with
+     a cold steel blob between them so the band is not one flat glow. */
+  --aurora-1: #9a1f2b;
+  --aurora-2: #2f4057;
+  --aurora-3: #6f1620;
+  --star: #c9d6e6;
 
   --shadow-panel: 0 10px 30px rgba(0, 0, 0, 0.45);
   --shadow-lift: 0 18px 44px rgba(0, 0, 0, 0.55), 0 0 0 1px color-mix(in srgb, var(--arcane) 14%, transparent);
@@ -116,6 +130,36 @@
    validated against a dark surface, and a light ground would need both
    regenerated rather than merely inverted.
    ============================================================ */
+
+/* The Second Calling with the red on the accent - the literal reading of the
+   site, where the buttons and the hover glow are red. Offered rather than
+   chosen: the accent lands eleven degrees of hue from --bad, so the active
+   nav item and "you died" become one colour at two lightnesses. The site can
+   afford that; a damage meter mostly cannot, which is why the default puts
+   the silver on the accent instead. Everything else is the :root block. */
+:root[data-theme='tsc-ember'] {
+  --gold: #d0343f; --gold-hi: #ff5a63; --gold-deep: #9a1f2b;
+  --arcane: #c9d6e6; --arcane-hi: #f4f8fd;
+  --ember: #ff5a63;
+  --glow-gold: 0 0 18px color-mix(in srgb, var(--gold) 45%, transparent);
+}
+
+/* Near-black violet ground, amethyst accent, cyan secondary.
+   This was the default from the 0.2.0 rebrand until The Second Calling took
+   the app onto the server's own palette. Kept whole, as Goldvein was kept
+   before it: a scheme people ran for a month is not a scheme to take away. */
+:root[data-theme='obelisk'] {
+  --void: #0a0810; --abyss: #120e1b;
+  --ink: #15111f; --ink-2: #0f0c18;
+  --surface: #15111f; --surface-2: #1d1729; --surface-3: #252036;
+  --line: #2a2338; --line-2: #352c47;
+  --gold: #a855f7; --gold-hi: #c9a2ff; --gold-deep: #7c3aed;
+  --arcane: #56b8e0; --arcane-hi: #8fd8f5;
+  --ember: #8b6ce8;
+  --text: #ece9f2; --text-2: #a29bb0; --muted: #6f6880;
+  --aurora-1: #6d28d9; --aurora-2: #a855f7; --aurora-3: #2f6fb8;
+  --star: #d3b8ff;
+}
 
 /* Indigo ground, periwinkle accent, cyan secondary. */
 :root[data-theme='nightfall'] {
@@ -181,14 +225,16 @@
 /* ------------------------------------------------------------
    The three below were added with the Nexus Reader rebrand.
 
-   Worth knowing if you add a ninth: the free hue space is genuinely narrow.
+   Worth knowing if you add a tenth: the free hue space is genuinely narrow.
    Four hues are reserved outright by the status colors and the trio slots
    (mint 158, red 8, amber 42, sky 203, amber 43, orchid 292), and five more
    are spoken for by the schemes above (violet 278, periwinkle 236, pink 337,
    lime 78, steel 203). An accent needs to be findable at a glance AND not be
    mistaken for "you died" sitting inline in a damage row, and most of the
    wheel fails one of those two. The way out is not always a new hue: Monolith
-   below has no hue at all and separates on lightness instead.
+   below has no hue at all and separates on lightness instead, and Moonrise -
+   the default - puts its red in the chrome and its silver on the accent for
+   exactly this reason.
    ------------------------------------------------------------ */
 
 /* Cool near-black slate, weathered gold, arcane blue.
@@ -378,70 +424,14 @@ h1, h2, h3 {
   background: linear-gradient(90deg, transparent, var(--gold-deep), var(--gold), var(--gold-deep), transparent);
 }
 
-/* --- The mark ------------------------------------------------------------
-   The gap in the ring sweeps round once every 18s, the halo breathes on 5.4s,
-   and the three bars pulse on 3.6s offset by a third each so the trio shimmers
-   rather than blinking in unison.
-
-   Everything here is slower than an emblem usually is, on purpose. This mark
-   sits in the title bar above a live damage meter; anything quicker becomes
-   something that moves in the corner of your eye while you are reading a
-   number, which is the one thing chrome must never do.
-
-   `transform-box: view-box` is load-bearing. Without it an SVG element rotates
-   about its own bounding box, so the arc would swing around its own centre
-   instead of turning about the mark's. */
-.mark {
-  display: block;
-  overflow: visible;
-  filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.28));
-}
-.mark .mk-ring,
-.mark .mk-halo {
-  transform-box: view-box;
-  transform-origin: 24px 24px;
-}
-.mark .mk-ring { animation: vfSpin 18s linear infinite; }
-.mark .mk-halo { animation: vfBreath 5.4s ease-in-out infinite; }
-
-/* The bars breathe about their own base, not the mark's centre - scaling them
-   from the middle would make them grow downward through the ring. */
-.mark .mk-b1,
-.mark .mk-spire,
-.mark .mk-b3 {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: vfPulseBar 3.6s ease-in-out infinite;
-}
-.mark .mk-spire { animation-delay: -1.2s; }
-.mark .mk-b3 { animation-delay: -2.4s; }
-
-@keyframes vfSpin { to { transform: rotate(360deg); } }
-@keyframes vfBreath {
-  0%, 100% { transform: scale(0.96); opacity: 0.6; }
-  50%      { transform: scale(1.05); opacity: 1; }
-}
-/* Height only. A bar that also widened would read as a wobble rather than as a
-   meter moving. */
-@keyframes vfPulseBar {
-  0%, 100% { transform: scaleY(0.9); }
-  50%      { transform: scaleY(1.06); }
-}
-
-.mark.still .mk-ring,
-.mark.still .mk-halo,
-.mark.still .mk-b1,
-.mark.still .mk-spire,
-.mark.still .mk-b3 { animation: none; }
+/* The mark is the server's phoenix - a raster, drawn by the title bar and the
+   first-run hero from assets/phoenix-crest.png and by the program icon from
+   build/phoenix-mark.png. It does not move: it sits above a live damage
+   meter, and the one animated line in the chrome is the title bar's filament. */
 
 @media (prefers-reduced-motion: reduce) {
   .aurora i,
-  .starfield i,
-  .mark .mk-ring,
-  .mark .mk-halo,
-  .mark .mk-b1,
-  .mark .mk-spire,
-  .mark .mk-b3 { animation: none !important; }
+  .starfield i { animation: none !important; }
 }
 
 /* ============================================================

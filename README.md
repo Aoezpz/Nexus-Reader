@@ -1,14 +1,14 @@
 # Nexus Reader
 
-**An emu multitool for three-classes-in-one EverQuest emulator servers.** It
-reads the log files EverQuest already writes and turns them into a live DPS
-meter, a fight timeline, trigger alerts, flag progression and the server's raid
-boards.
+**The Second Calling's log companion.** It reads the log files EverQuest
+already writes and turns them into a live DPS meter, a fight timeline, trigger
+alerts, the road to the Plane of Time and the server's raid records.
 
-It is not built for one server. The server shortname it looks for in your log
-filenames, and the item database it can pull tooltips from, are both settings —
-clear the database field and the app runs entirely on its bundled data with no
-network access at all.
+It is pointed at one server on purpose: the defaults, the bundled progression
+data and the hover cards all come from [tscemu.com](https://tscemu.com). The
+site is a **data source, not a dependency** — clear the address in Preferences
+and the app runs entirely on its bundled data with no network access at all,
+and pointing it at another server's site is a text field.
 
 **It only reads your log.** Nothing is injected into EverQuest, no game file is
 touched, no memory is read, and nothing is played for you. Turn logging off and
@@ -20,10 +20,9 @@ the app has nothing to show.
 
 1. Install and run it. It is a per-user install like Discord — no admin prompt.
 2. In game, type `/log on` for **each character you box**.
-3. That's it. The app finds `eqlog_<Character>_<server>.txt` on its own, usually
-   under `…\Logs\`. If your install lives somewhere unusual, point it at the
-   right folder in **Preferences** and it attaches immediately — and set the
-   **server shortname** there if yours isn't `multiclass`.
+3. That's it. The app finds `eqlog_<Character>_TSC.txt` on its own, usually
+   under `…\TSC Client\Logs\`. If your install lives somewhere unusual, point it
+   at the right folder in **Preferences** and it attaches immediately.
 
 Windows will warn about an unrecognised app the first time you run the
 installer. That is SmartScreen reacting to an unsigned binary, not a virus
@@ -35,20 +34,22 @@ reputation that suppresses the warning is bought, not earned by being safe.
 | Section | What you get |
 |---|---|
 | **Combat** | Live meter with per-skill breakdowns, a rolling DPS curve, damage by mob, procs, and the raw stream. A **Timeline** view puts one lane per skill so you can see misses as gaps. |
-| **Progression** | Expansion gates and Plane of Time flags, ticked the moment the boss dies in your log. |
-| **Leaderboards** | The server's raid boards — first clears, fastest kills, highest DPS, by bracket. Read-only. |
+| **Progression** | The four expansion doors and the forty-one flags to the Plane of Time. A kill is marked the moment the boss dies in your log; the flag itself is confirmed by syncing from the site, because on this server a kill outside a progression instance grants nothing. |
+| **Leaderboards** | The Hall's raid records — first clear, fastest kill and top DPS for every encounter, at every party size. Read-only. |
 | **Alerts** | Rules over log lines with sounds and speech. Shareable as one `TRIA1:` string you can paste into Discord. |
 | **Leveling** | Levels, ability points and kill rate per character. |
 | **Loot** | What dropped and what the server auto-sold, priced in copper so the arithmetic is exact. |
 | **Zones** | A lifetime ledger: where the hours went, kills and coin per zone. |
 | **Mobs** | A bestiary — kills, kill times, damage traded, and which mobs have actually killed you. |
 | **Timers** | Countdowns you set, plus respawn windows worked out from gaps between your own kills. |
-| **Server** | World blessings with live countdowns, who is levelling and arriving, and auction traffic. |
+| **Server** | Auction and grouping traffic heard on the broadcast channels, and **Tonight**: the site's own standings, thirty-day feed and chronicle of firsts. |
 | **Overlays** | Always-on-top meter and stream windows. They open **locked** — click-through, so a stray click lands on the game instead of stealing focus from it. |
 
-Preferences also carries eight color schemes and a **Rebuild from logs** button that
-replays every `eqlog` on disk into the lifetime ledgers, so a folder with a year of
-history in it does not start at zero.
+The title bar shows how many souls are in the world, read from the site once a
+minute. Preferences carries nine color schemes — **Moonrise**, the server's own
+palette, is the default — and a **Rebuild from logs** button that replays every
+`eqlog` on disk into the lifetime ledgers, so a folder with a year of history in
+it does not start at zero.
 
 ### Boxing a trio
 
@@ -82,18 +83,20 @@ That is how DirectX works, not something the app can route around.
 - **No XP percentage.** EverQuest logs record *that* you gained experience,
   never how much. The Leveling page charts levels, ability points and rates.
   An XP bar would have to be invented.
-- **No leaderboard submissions.** The game server records every ranked clear
-  itself. The app only reads the boards.
-- **No guessing at flags it cannot see.** Steps that no log line announces —
-  "plead Mavuin's case", "passage to the Halls of Honor" — are marked *by hand*
-  and say so.
+- **No leaderboard submissions.** The game server records every clear itself.
+  The app only reads the records.
+- **No calling a kill a flag.** The log proves a boss died with you there. On
+  this server that is not the same as being flagged, so the page says *killed*
+  until the site says *flagged*.
+- **No guessing at flags it cannot see.** Hails and trials — "hail Mavuin",
+  "a trial before the Tribunal" — are marked *by hand* and say so.
 
 ## Development
 
 ```bash
 npm install
 npm run dev        # app + hot reload
-npm test           # parser, merge, alerts and voice suites
+npm test           # parser, merge, alerts, voice and site-markup suites
 npm run build      # typecheck + bundle
 npm run package    # Windows installer -> release/<version>/
 ```
@@ -111,21 +114,33 @@ since that duplication is what the merge rule exists to handle.
 ### Regenerating bundled data
 
 ```bash
-node scripts/export-progression.mjs                    # data/progression.json, from PTDex
-node scripts/export-buffs.mjs "<path>\spells_us.txt"   # data/buffs.json, from the client
-node scripts/make-icon.mjs                             # build/icon.png + icon.ico
+node scripts/export-progression.mjs --character <Name>   # data/progression.json, from tscemu.com
+node scripts/export-buffs.mjs "<TSC Client>\spells_us.txt" # data/buffs.json, from the client
+node scripts/make-icon.mjs                                 # build/icon.png + icon.ico
 ```
+
+### The site's markup
+
+Everything the app reads off tscemu.com — character rows, the progression
+page, the raid records, search results — is parsed in
+`src/main/siteparse.ts` against fixtures cut from the live site in
+`tests/fixtures/tsc/`. When the site's markup moves, `npm test` says which
+reader broke. The hover cards come from two small JSON routes the site serves
+for the purpose (`/items/tip`, `/spells/tip`), falling back to the search page
+on a site that has not deployed them.
 
 ### Finding what the parser misses
 
 ```bash
-node scripts/unparsed.mjs "<path>\eqlog_<Char>_<server>.txt"
+node scripts/unparsed.mjs "<path>\eqlog_<Char>_TSC.txt"
 ```
 
 Ranks every log line the parser currently ignores, commonest first. Almost every
-feature in the app started here — heals, absorbs, specials, blessings and the
-buff board were all found by reading that list rather than by guessing at what
-EverQuest might write.
+feature in the app started here — heals, absorbs, specials and the buff board
+were all found by reading that list rather than by guessing at what EverQuest
+might write. The Server page's blessing and census readers were written against
+a different server's log and have not yet been checked against a TSC one; this
+is the script to do it with.
 
 ## Licence, credit and what this is not
 
@@ -148,20 +163,17 @@ which is the same ground log parsers have stood on since GamParse.
 
 ### Known rough edges
 
-- **Scraped pages can rot.** The leaderboards and the bundled progression data
-  come from the configured site's own markup, because there is no JSON endpoint
-  for either. If the site changes, the page says so plainly rather than showing
-  empty boards.
-- **Progression is one server's flag list.** `data/progression.json` was
-  exported from a particular site. On another server the gates will be close but
-  not identical, and there is no auto-detection for that yet.
+- **Scraped pages can rot.** The raid records, character rows and progression
+  page are read from the site's own markup, because there is no JSON for them.
+  If the site changes, the page says so plainly rather than showing empty
+  boards.
+- **The Server page's broadcasts are unverified here.** World blessings, the
+  first-login census and the auction feed were built against another server's
+  log lines. They are hidden when nothing matches, not faked.
 - **The buff board only shows unambiguous spells.** It reads effect messages out
   of the client's `spells_us.txt`, and keeps only those naming exactly one spell.
   "Your protection fades." belongs to 26 of them and is skipped rather than
   guessed at. There are no durations either — the log never states one.
-- **World blessings have no expiry message.** The server announces one when it
-  is switched on or extended, and never again, so one that started while you
-  were logged out is invisible.
 - **Windows 11 "Natural" voices** may not be visible to the app's speech
   engine even when Windows lists them. Preferences shows exactly which voices
   it can see, so you can tell that apart from "not installed".

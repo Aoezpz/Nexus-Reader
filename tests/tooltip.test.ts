@@ -3,8 +3,6 @@ import { parseLine, type ParseContext } from '../src/shared/parser/patterns'
 import { tokenize } from '../src/shared/parser/tokenize'
 import type { ParsedEvent } from '../src/shared/parser/types'
 import { isSpellName, seconds, ticksToText } from '../src/shared/tooltip'
-import { parseItemCard } from '../src/main/tooltips'
-import type { ItemTip } from '../src/shared/tooltip'
 
 function ctx(self = 'Hexzo'): ParseContext {
   return { self, petOwners: new Map(), players: new Set([self]) }
@@ -78,78 +76,8 @@ describe('isSpellName', () => {
   })
 })
 
-describe('parseItemCard', () => {
-  /** Trimmed from the real response for /tooltip/8980. */
-  const CARD = `
-    <table class='item-card'><tbody>
-      <tr><td colspan='3'><table>
-        <tr><td rowspan="5"><span class="item-icon"></span></td></tr>
-        <tr><td></td><td>Cord of Potameid Braids</td></tr>
-      </table></td></tr>
-      <tr></tr>
-      <tr><td colspan='3'><table><tr>
-        Class: ALL
-      </tr></table></td></tr>
-      <tr><td colspan='3'><table><tr>
-        Secondary Primary Range
-      </tr></table></td></tr>
-      <tr><td><table><tr></tr></table></td>
-        <td><table>
-          <tr><td>AC:</td><td colspan="2" align="right">5</td></tr>
-          <tr><td>HP:</td><td align="right">35</td></tr>
-          <tr><td>Mana:</td><td align="right">35</td></tr>
-          <tr><td>End:</td><td align="right">35</td></tr>
-        </table></td>
-        <td><table><tr><td>Cold:</td><td align="right">5</td></tr></table></td>
-      </tr>
-      <tr><td nowrap="1" colspan='3'>Slot 1, type 2 (Elite)</td></tr>
-      <tr><td nowrap="1" colspan='3'>Slot 2, type 4 (Weapon)</td></tr>
-    </tbody></table>`
-
-  const blank = (): ItemTip => ({
-    kind: 'item',
-    name: 'Cord of Potameid Braids',
-    id: 8980,
-    notes: [],
-    stats: [],
-    extras: []
-  })
-
-  it('pulls the stats out as label and value', () => {
-    const tip = parseItemCard(CARD, blank())
-    expect(tip.stats).toEqual([
-      { label: 'AC', value: '5' },
-      { label: 'HP', value: '35' },
-      { label: 'Mana', value: '35' },
-      { label: 'End', value: '35' },
-      { label: 'Cold', value: '5' }
-    ])
-  })
-
-  it('keeps the free-text rows the site writes without cells', () => {
-    // These carry the decoded bitmasks - who can wear it and where - which is
-    // exactly the part not worth re-deriving from `classes = 65535`.
-    expect(parseItemCard(CARD, blank()).notes).toEqual(['Class: ALL', 'Secondary Primary Range'])
-  })
-
-  it('collects the augment slots', () => {
-    expect(parseItemCard(CARD, blank()).extras).toEqual([
-      'Slot 1, type 2 (Elite)',
-      'Slot 2, type 4 (Weapon)'
-    ])
-  })
-
-  it('does not repeat the item name back as a note', () => {
-    expect(parseItemCard(CARD, blank()).notes).not.toContain('Cord of Potameid Braids')
-  })
-
-  it('survives markup it has never seen', () => {
-    const tip = parseItemCard('<p>nothing here</p>', blank())
-    expect(tip.stats).toEqual([])
-    expect(tip.notes).toEqual([])
-    expect(tip.name).toBe('Cord of Potameid Braids')
-  })
-})
+// The card readers themselves - the site's JSON answer and its search rows -
+// are tested against the site's real markup in site.test.ts.
 
 describe('unit formatting', () => {
   it('drops a pointless decimal from a cast time', () => {

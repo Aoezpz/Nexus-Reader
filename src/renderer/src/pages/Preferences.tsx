@@ -415,20 +415,22 @@ export function Preferences({
 
       <section className="panel">
         <div className="phead">
-          <span className="t">PTDex</span>
+          <span className="t">Server website</span>
         </div>
         <div className="pbody form">
           <label className="field">
-            <span className="flabel">Site address</span>
+            <span className="flabel">Address</span>
             <input
               type="text"
               value={settings.ptdexBase}
-              placeholder="https://…"
+              placeholder="https://tscemu.com"
               onChange={(e) => void update({ ptdexBase: e.target.value.trim() })}
             />
             <span className="fhint">
-              Optional. Fills item and spell tooltips from the website. Leave blank and the app runs entirely
-              on its bundled data.
+              Optional. Where the app reads who your group-mates are, the account&apos;s flags, the raid
+              records, item and spell hover cards, and who is in the world. Every request is a read of a
+              public page; nothing is ever sent. Leave blank and the app runs entirely on its bundled data
+              with no network access at all.
             </span>
           </label>
         </div>

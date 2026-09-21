@@ -193,6 +193,12 @@ name and seven lines of invented log text. Those were painted out before
 bundling. If a future banner arrives with sample text baked in, do the same -
 this app does not put fabricated log lines on screen beside real ones.
 
+## Superseded by Moonrise
+
+0.3.0 moved the app onto The Second Calling's own palette and pointed it at
+tscemu.com; the "never name a server" rule above was set aside on purpose.
+Obelisk survives as a scheme. See `docs/MOONRISE.md`.
+
 ## Still open
 
 - **Step 10, the GitHub rename**, which needs a decision rather than a commit:

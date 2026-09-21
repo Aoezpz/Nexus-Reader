@@ -190,7 +190,7 @@ describe('group ownership across a trio', () => {
 describe('display helpers', () => {
   const id = (over: Partial<Identity> = {}): Identity => ({
     name: 'Hexzo',
-    id: 180750,
+    id: 'Hexzo',
     level: 65,
     race: 'Human',
     classes: ['War', 'Rng', 'Brd'],
@@ -213,10 +213,10 @@ describe('display helpers', () => {
     expect(classLine(id({ classes: [] }))).toBeNull()
   })
 
-  it('names and colors every class PTDex can print', () => {
-    // The sixteen abbreviations were read off the site's own search results,
-    // including SK - which is two letters where every other class is three,
-    // and would have been "Shd" in any list written from memory.
+  it('names and colors every class the site can print', () => {
+    // The sixteen abbreviations are the app's own, including SK - which is two
+    // letters where every other class is three. The site writes "SHD" and
+    // "Shadowknight"; abbrevOf folds both to this one.
     const all = ['War', 'Clr', 'Pal', 'Rng', 'SK', 'Dru', 'Mnk', 'Brd', 'Rog', 'Shm', 'Nec', 'Wiz', 'Mag', 'Enc', 'Bst', 'Ber']
     for (const c of all) {
       expect(CLASS_NAMES[c], `${c} has no full name`).toBeTruthy()

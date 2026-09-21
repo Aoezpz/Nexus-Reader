@@ -10,7 +10,7 @@ import './migrate'
 import type {
   CombatState,
   OverlayPreset,
-  PtdexSyncResult,
+  SiteSyncResult,
   Settings,
   WatcherStatus
 } from '@shared/ipc'
@@ -34,7 +34,7 @@ import {
   toggleOverlay
 } from './overlay'
 import { Progress } from './progress'
-import { fetchProgress, findCharacter } from './ptdex'
+import { fetchChampions, fetchProgress, fetchWorld, findCharacter } from './site'
 import { Roster } from './roster'
 import { Session } from './session'
 import { Zones } from './zones'
@@ -307,83 +307,83 @@ function registerIpc(): void {
   ipcMain.handle('progress:reset', () => progress.reset())
 
   /**
-   * Pull flags and levels off PTDex for every character being tailed.
+   * Pull flags and levels off the server's website for every character being
+   * tailed.
    *
    * Per character rather than once, because each has its own page - and while
    * flags are account-wide on this server, levels are not. Failures are
    * reported per character instead of aborting the whole sync: one renamed or
    * anonymous character should not stop the other two syncing.
    */
-  ipcMain.handle('ptdex:sync', async (): Promise<PtdexSyncResult> => {
+  ipcMain.handle('site:sync', async (): Promise<SiteSyncResult> => {
     const base = getSettings().ptdexBase
     const characters = session.status().sources.map((s) => s.character)
 
+    const blank = (name: string, error: string | null): SiteSyncResult['characters'][number] => ({
+      name,
+      found: false,
+      id: null,
+      level: null,
+      earned: 0,
+      killedUnflagged: 0,
+      error,
+      unknownSteps: []
+    })
+
     if (!base || characters.length === 0) {
       return {
-        characters: characters.map((name) => ({
-          name,
-          found: false,
-          id: null,
-          level: null,
-          earned: 0,
-          error: base ? null : 'No PTDex address configured.',
-          unknownSteps: []
-        })),
+        characters: characters.map((name) => blank(name, base ? null : 'No server website configured.')),
         summary: progress.summary(),
         state: progress.marks()
       }
     }
 
-    const results: PtdexSyncResult['characters'] = []
+    const results: SiteSyncResult['characters'] = []
 
     for (const name of characters) {
       try {
         const found = await findCharacter(base, name)
         if (!found) {
-          results.push({
-            name,
-            found: false,
-            id: null,
-            level: null,
-            earned: 0,
-            error: 'No character with that exact name on PTDex.',
-            unknownSteps: []
-          })
+          results.push(blank(name, 'No character with that exact name on the site.'))
           continue
         }
 
         const prog = await fetchProgress(base, found, progress.data())
-        progress.merge(prog.earned, 'ptdex')
-        if (prog.character.level) leveling.setLevel(name, prog.character.level)
-        // The progression page carries the race and the class chips, so this is
-        // the most complete identity the app ever sees - hand it to the roster
-        // rather than making it fetch the same character again.
-        roster.put({ ...prog.character, name })
+        progress.merge(prog.earned, 'site')
+        const level = prog.level ?? found.level
+        if (level) leveling.setLevel(name, level)
+        // The progression page carries the class chips, so this is the most
+        // complete identity the app ever sees - hand it to the roster rather
+        // than making it fetch the same character again.
+        roster.put({
+          ...found,
+          name,
+          level,
+          classes: prog.classes.length > 0 ? prog.classes : found.classes
+        })
 
         results.push({
           name,
           found: true,
           id: found.id,
-          level: prog.character.level,
+          level,
           earned: prog.earned.length,
+          killedUnflagged: prog.killedUnflagged.length,
           error: null,
           unknownSteps: prog.unknownSteps
         })
       } catch (err) {
-        results.push({
-          name,
-          found: false,
-          id: null,
-          level: null,
-          earned: 0,
-          error: (err as Error).message,
-          unknownSteps: []
-        })
+        results.push(blank(name, (err as Error).message))
       }
     }
 
     return { characters: results, summary: progress.summary(), state: progress.marks() }
   })
+
+  ipcMain.handle('site:world', () => fetchWorld(getSettings().ptdexBase))
+  ipcMain.handle('site:champions', (_e, opts: { force?: boolean } = {}) =>
+    fetchChampions(getSettings().ptdexBase, opts?.force ?? false)
+  )
   ipcMain.handle('progress:set', (_e, { key, earned }: { key: string; earned: boolean }) =>
     progress.set(key, earned)
   )

@@ -1,17 +1,19 @@
 /**
- * Extracts the Plane of Time flagging structure from PTDex into
+ * Extracts the road to the Plane of Time from the server's website into
  * `data/progression.json`, which the app bundles.
  *
- * The page it reads is per-character, but only the STATE is - the chapters,
- * bosses and zones are the same for everyone. So this takes the definitions
- * and throws the character's ticks away; the app tracks state itself, from the
- * log, and can optionally seed from PTDex at runtime.
+ * The page it reads is per-character (`/characters/<name>/progression`), but
+ * only the STATE is - the doors, tiers, bosses and flags are the same for
+ * everyone. So this takes the definitions and throws the character's ticks
+ * away; the app tracks state itself, from the log, and can seed from the site
+ * at runtime.
  *
- * Rows are the unit, not the page's printed counters - see the note by the
- * badge check below for why those cannot be trusted.
+ * The chapter titles written here are read back by src/main/siteparse.ts when
+ * it syncs a character - the door's `h3` and the tier's `.pgtname`, verbatim -
+ * so the two agree by construction rather than by care.
  *
  *   node scripts/export-progression.mjs
- *   node scripts/export-progression.mjs --base https://nms.bestemu.com --character 180260
+ *   node scripts/export-progression.mjs --base https://tscemu.com --character Aodeez
  */
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -22,10 +24,10 @@ for (let i = 2; i < process.argv.length; i += 2) {
   args.set(process.argv[i].replace(/^--/, ''), process.argv[i + 1])
 }
 
-const BASE = args.get('base') ?? 'https://nms.bestemu.com'
-const CHARACTER = args.get('character') ?? '180260'
+const BASE = args.get('base') ?? 'https://tscemu.com'
+const CHARACTER = args.get('character') ?? 'Aodeez'
 const OUT = args.get('out') ?? join(process.cwd(), 'data', 'progression.json')
-const URL_ = `${BASE}/character/${CHARACTER}/progression`
+const URL_ = `${BASE}/characters/${encodeURIComponent(CHARACTER)}/progression`
 
 const clean = (s) => (s ?? '').replace(/\s+/g, ' ').trim()
 const slug = (s) =>
@@ -34,11 +36,52 @@ const slug = (s) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '')
 
-/** Numeric id out of an href like /npc/detail/32040 */
-function idFrom(el, prefix) {
-  const a = el?.querySelector(`a[href^="${prefix}"]`)
-  const m = a && /(\d+)\s*$/.exec(a.getAttribute('href') ?? '')
-  return m ? Number(m[1]) : null
+/**
+ * What kind of step this is, which decides whether the log can see it.
+ *
+ * The site does not say outright, but it says enough: a step whose note tells
+ * you to hail somebody is a hail; a trial you choose one of, or a run of
+ * deliveries, is an event; a gate boss is a kill. The rule is written down
+ * here so a wrong call is a line to fix, not a guess to argue about - and the
+ * app labels every non-kill "by hand" on the page, so a wrong call is visible
+ * rather than silent.
+ */
+function kindOf(name, note, hasPick) {
+  const known = KNOWN_KINDS[name]
+  if (known) return known
+  if (hasPick) return 'event'
+  if (/\bhail\b|conversation, not a fight|speak to him again/i.test(note)) return 'hail'
+  if (/^(a|the) trial\b/i.test(name)) return 'event'
+  if (/deliver|gathered from|handed over/i.test(note)) return 'event'
+  return 'kill'
+}
+
+/**
+ * Steps the wording rule gets wrong, settled by name. Each is a case where
+ * the note says one thing and the step is another: Saryrn's note ends "back
+ * down the tower to report it", but Saryrn is a kill; the Carprin line's note
+ * says "hail him, do not kill him" about ONE member of a line you otherwise
+ * kill your way down. The Maelins are conversations whose notes never use the
+ * word.
+ */
+const KNOWN_KINDS = {
+  'Loreseeker Maelin': 'hail',
+  'Grand Librarian Maelin': 'hail',
+  "Mavuin's case": 'hail',
+  'The Carprin line': 'event',
+  Saryrn: 'kill',
+  'The Manaetic Behemoth': 'kill',
+  'A Construct of Nightmares': 'kill'
+}
+
+/**
+ * The name the log writes when the thing dies. "Fennin Ro, the Tyrant of
+ * Fire" is the site's title; the corpse is "Fennin Ro". Everything after the
+ * first comma is title, not name.
+ */
+function mobOf(name) {
+  const mob = name.replace(/,.*$/, '').trim()
+  return mob === name ? null : mob
 }
 
 const res = await fetch(URL_)
@@ -48,103 +91,134 @@ if (!res.ok) {
 }
 const root = parse(await res.text())
 
-const sections = []
+// ---- the four doors ------------------------------------------------------
 
-// Each `.seg` header is followed by a `.climb` holding that section's chapters.
-for (const seg of root.querySelectorAll('.seg')) {
-  const name = clean(seg.querySelector('.sn')?.text)
-  if (!name) continue
+const doors = []
+for (const door of root.querySelectorAll('article.pgdoor')) {
+  const title = clean(door.querySelector('h3')?.text)
+  if (!title) continue
+  // "Door 1 · RoK"
+  const dnum = clean(door.querySelector('.pgdnum')?.text)
+  const era = dnum.split('·').map(clean).filter(Boolean).pop() ?? null
 
-  // The climb is the next sibling element that carries the class.
-  let climb = seg.nextElementSibling
-  while (climb && !climb.classList.contains('climb')) climb = climb.nextElementSibling
-  if (!climb) continue
-
-  const chapters = []
-
-  for (const ch of climb.querySelectorAll('details.ch')) {
-    const title = clean(ch.querySelector('.tt')?.childNodes.map((n) => (n.rawTagName === 'span' ? '' : n.text)).join(''))
-    if (!title) continue
-
-    const groups = []
-    for (const grp of ch.querySelectorAll('.grp')) {
-      const plane = clean(grp.querySelector('.gn')?.text) || null
-      const planeShort = clean(grp.querySelector('.gz')?.text) || null
-
-      const steps = []
-      for (const st of grp.querySelectorAll('.st')) {
-        const nm = st.querySelector('.nm')
-        if (!nm) continue
-
-        // A badge span ("2 stages") rides inside .nm; keep it, but out of the name.
-        const badge = clean(nm.querySelector('span')?.text) || null
-        const stepName = clean(
-          nm.childNodes.map((n) => (n.rawTagName === 'span' ? '' : n.text)).join('')
-        )
-        if (!stepName) continue
-
-        // Some rows carry a "2 stages" badge - one line on the page, more than
-        // one step in the encounter. Recorded so the UI can show it; not used
-        // as a multiplier, because the page is inconsistent about whether its
-        // own totals count stages or rows.
-        const stages = Number(/(\d+)\s*stages?/i.exec(badge ?? '')?.[1] ?? 1) || 1
-
-        const whereat = st.querySelector('.whereat')
-        steps.push({
-          name: stepName,
-          badge,
-          stages,
-          npcId: idFrom(nm, '/npc/detail/'),
-          zone: clean(whereat?.querySelector('a')?.text) || plane,
-          zoneId: idFrom(whereat, '/zone/detail/'),
-          zoneShort: clean(whereat?.querySelector('.sh')?.text) || planeShort,
-          level: Number(/lvl (\d+)/.exec(whereat?.querySelector('.lv')?.text ?? '')?.[1] ?? 0) || null,
-          how: clean(st.querySelector('.ds')?.text) || null
-        })
-      }
-
-      if (steps.length > 0) groups.push({ plane, planeShort, steps })
+  const steps = door.querySelectorAll('li.pgboss').map((li) => {
+    const name = clean(li.querySelector('.pgname')?.text)
+    return {
+      name,
+      badge: null,
+      stages: 1,
+      mob: mobOf(name),
+      kind: 'kill',
+      zone: clean(li.querySelector('.pgwhere')?.text) || null,
+      level: Number(clean(li.querySelector('.pglvl')?.text)) || null,
+      how: null,
+      opens: null
     }
+  })
 
-    /**
-     * The page prints a per-chapter count, but it is not a usable oracle: on
-     * the reference character Tier 1 badges 12 against 11 rows (counting a
-     * two-stage row twice) while Tier 2 badges 8 against 8 rows (not counting
-     * its three multi-stage rows at all), and the section header's 42 matches
-     * neither the row sum (40) nor the badge sum (41).
-     *
-     * So rows are what we extract - they are unambiguous, and a row is what
-     * the app can actually observe being completed in a log. The badge is
-     * recorded for reference and any disagreement is reported, not fatal.
-     */
-    const rows = groups.reduce((n, g) => n + g.steps.length, 0)
-    const stages = groups.reduce((n, g) => n + g.steps.reduce((m, s) => m + s.stages, 0), 0)
-    const badgeCount = Number(/(\d+)\s*$/.exec(clean(ch.querySelector('.cnt span')?.text))?.[1] ?? 0) || null
-    if (badgeCount !== null && badgeCount !== rows && badgeCount !== stages) {
-      console.warn(`  note "${title}": page badge ${badgeCount}, rows ${rows}, stages ${stages}`)
-    }
+  // "27 zones" + "Chardok · Chardok: The Halls of Betrayal · … · and 20 more"
+  const unlock = door.querySelector('.pgunlock')
+  const opens = unlock
+    ? `${clean(unlock.querySelector('b')?.text)}: ${clean(unlock.querySelector('span')?.text)}`
+    : null
 
-    chapters.push({
-      id: slug(title),
-      title,
-      era: clean(ch.querySelector('.tt .era')?.text) || null,
-      blurb: clean(ch.querySelector('.bl')?.text) || null,
-      opens: clean(ch.querySelector('.opens b')?.text).replace(/^[^A-Za-z]+/, '') || null,
-      rows,
-      stages,
-      badgeCount,
-      groups
-    })
-  }
-
-  if (chapters.length > 0) {
-    sections.push({ id: slug(name), name, detail: clean(seg.querySelector('.sd')?.text), chapters })
-  }
+  doors.push({
+    id: `door-${doors.length + 1}-${slug(title)}`,
+    title,
+    era: dnum || era,
+    blurb: null,
+    opens,
+    rows: steps.length,
+    stages: steps.length,
+    badgeCount: Number(/(\d+)\s+of\s+(\d+)/.exec(clean(door.querySelector('.pgdcount')?.text))?.[2] ?? 0) || null,
+    groups: [{ plane: null, planeShort: null, steps }]
+  })
 }
 
-const stepsIn = (ch) => ch.rows
-const total = sections.reduce((s, sec) => s + sec.chapters.reduce((c, ch) => c + stepsIn(ch), 0), 0)
+// ---- the five tiers ------------------------------------------------------
 
+const tiers = []
+for (const tier of root.querySelectorAll('details.pgtier')) {
+  const title = clean(tier.querySelector('.pgtname')?.text)
+  if (!title) continue
+  const era = clean(tier.querySelector('.pgnum')?.text) || null
+
+  const groups = []
+  for (const grp of tier.querySelectorAll('.pggroup')) {
+    const h4 = grp.querySelector('h4')
+    const plane = clean(h4?.childNodes.map((n) => (n.rawTagName === 'span' ? '' : n.text)).join('')) || null
+
+    const steps = []
+    for (const li of grp.querySelectorAll('li.pgstep')) {
+      const name = clean(li.querySelector('.pgname')?.text)
+      if (!name) continue
+      const note = clean(li.querySelector('.pgnote')?.text)
+      // "2 of 2 stages · Plane of Innovation" - the stage count rides in
+      // front of the zone, separated by the middle dot.
+      const where = clean(li.querySelector('.pgwhere')?.text)
+      const bits = where.split('·').map(clean)
+      const stageBit = bits.find((b) => /stages?$/.test(b))
+      const stages = Number(/of\s+(\d+)\s+stages?/.exec(stageBit ?? '')?.[1] ?? 1) || 1
+      const zone = bits.filter((b) => b !== stageBit).join(' · ') || plane
+      const hasPick = !!li.querySelector('.pgpick')
+      const kind = kindOf(name, note, hasPick)
+
+      steps.push({
+        name,
+        badge: stages > 1 ? `${stages} stages` : null,
+        stages,
+        mob: kind === 'kill' ? mobOf(name) : null,
+        kind,
+        zone,
+        level: null,
+        how: note || null,
+        opens: clean(li.querySelector('.pgopens')?.text) || null
+      })
+    }
+    if (steps.length > 0) groups.push({ plane, planeShort: null, steps })
+  }
+
+  const rows = groups.reduce((n, g) => n + g.steps.length, 0)
+  const stages = groups.reduce((n, g) => n + g.steps.reduce((m, s) => m + s.stages, 0), 0)
+  const badgeCount = Number(/(\d+)\s+of\s+(\d+)/.exec(clean(tier.querySelector('.pgtcount')?.text))?.[2] ?? 0) || null
+  if (badgeCount !== null && badgeCount !== rows) {
+    console.warn(`  note "${title}": page counts ${badgeCount}, rows ${rows}`)
+  }
+
+  tiers.push({
+    id: `tier-${tiers.length + 1}-${slug(title)}`,
+    title,
+    era,
+    blurb: clean(tier.querySelector('.pgblurb')?.text) || null,
+    opens: null,
+    rows,
+    stages,
+    badgeCount,
+    groups
+  })
+}
+
+const sections = []
+if (doors.length > 0) {
+  const bosses = doors.reduce((n, d) => n + d.rows, 0)
+  sections.push({
+    id: 'the-expansion-gates',
+    name: 'The expansion gates',
+    detail: `${bosses} bosses · ${doors.length} doors`,
+    chapters: doors
+  })
+}
+if (tiers.length > 0) {
+  const flags = tiers.reduce((n, t) => n + t.rows, 0)
+  sections.push({
+    id: 'the-road-to-time',
+    name: 'The road to Time',
+    detail: `${flags} flags · ${tiers.length} tiers`,
+    chapters: tiers
+  })
+}
+
+const total = sections.reduce((s, sec) => s + sec.chapters.reduce((c, ch) => c + ch.rows, 0), 0)
 if (total === 0) {
   console.error('extracted nothing - the page markup has changed; fix the selectors above')
   process.exit(1)
@@ -157,7 +231,7 @@ writeFileSync(
     {
       source: URL_,
       extractedAt: new Date().toISOString(),
-      note: 'Definitions only. Per-character state is tracked by the app, never taken from this file.',
+      note: 'Definitions only. Per-character state is tracked by the app, never taken from this file. Flags are account-wide on this server, and a kill outside a progression instance grants no flag.',
       sections
     },
     null,
@@ -168,5 +242,8 @@ writeFileSync(
 console.log(`wrote ${OUT} (${total} steps)`)
 for (const sec of sections) {
   console.log(`  ${sec.name}: ${sec.chapters.length} chapters`)
-  for (const ch of sec.chapters) console.log(`    ${ch.title} — ${stepsIn(ch)}`)
+  for (const ch of sec.chapters) {
+    const kinds = ch.groups.flatMap((g) => g.steps).reduce((m, s) => ((m[s.kind] = (m[s.kind] ?? 0) + 1), m), {})
+    console.log(`    ${ch.title} — ${ch.rows} (${Object.entries(kinds).map(([k, n]) => `${n} ${k}`).join(', ')})`)
+  }
 }

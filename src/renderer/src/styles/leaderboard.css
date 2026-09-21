@@ -1,24 +1,18 @@
 /* ============================================================
-   Leaderboards — the race board.
+   Leaderboards — the Hall.
 
-   Each boss card carries its own accent, taken from the site so the two agree
-   at a glance. Bracket color is positional and matches the trio slot colors
+   One monument per encounter, drawn as the site draws it: marks down (first
+   clear, fastest kill, DPS), party sizes across (solo, duo, trio). Each card
+   carries the accent the site gives that encounter, so the two agree at a
+   glance. Bracket colour is positional and matches the trio slot colours
    used everywhere else: solo sky, duo amber, trio orchid.
    ============================================================ */
 
 .lb { gap: var(--s-4); }
 
-.lb-hero {
-  position: relative;
-  flex: none;
-  overflow: hidden;
-  border: var(--line-w) solid var(--line);
-  border-radius: var(--r-lg);
-  background:
-    radial-gradient(70% 130% at 85% 0%, color-mix(in srgb, var(--arcane) 16%, transparent), transparent 62%),
-    linear-gradient(180deg, var(--surface-2), var(--ink));
-  box-shadow: var(--shadow-panel);
-}
+/* The ground, brackets, kicker and title rule are shared with every page
+   header - see "Page headers" in app.css. Only the layout is here. */
+.lb-hero { flex: none; }
 .lb-hero-in {
   position: relative;
   z-index: 1;
@@ -28,7 +22,7 @@
   padding: var(--s-5) var(--s-5) var(--s-4);
   flex-wrap: wrap;
 }
-.lb-hero h1 { font-size: 1.75rem; margin: var(--s-1) 0 var(--s-2); }
+.lb-hero h1 { font-size: 1.75rem; margin: var(--s-2) 0 var(--s-2); color: var(--gold-hi); }
 .lb-hero .lede { color: var(--text-2); margin: 0; font-size: 0.9rem; max-width: 58ch; }
 .lb-actions { display: flex; gap: var(--s-2); }
 
@@ -41,30 +35,23 @@
   padding: 0 var(--s-5) var(--s-5);
 }
 .lb-totals .t { display: flex; flex-direction: column; gap: 0.1875rem; }
-.lb-totals .n { font-size: 1.3rem; font-weight: 800; line-height: 1; color: var(--gold-hi); }
-.lb-totals .l {
-  font-size: 0.56rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--muted);
-  font-weight: 700;
-}
+.lb-totals .n { font-size: 1.4rem; line-height: 1; }
 
-/* ---- boss card ---- */
-.lb-boss {
+/* ---- monument ---- */
+.lb-mon {
   position: relative;
   /* `.page` is a flex column, so without this the cards shrink to fit the
-     viewport and `overflow: hidden` silently eats the Duo and Trio rows. The
-     page scrolls; the cards must keep their natural height. */
+     viewport and `overflow: hidden` silently eats the bottom rows. The page
+     scrolls; the cards must keep their natural height. */
   flex: none;
   border: var(--line-w) solid var(--line);
   border-radius: var(--r-lg);
   background: linear-gradient(180deg, var(--surface), var(--surface-2));
   overflow: hidden;
 }
-/* The accent is the boss's own, so the cards stay distinguishable in a long
-   scroll without any of them shouting. */
-.lb-boss::before {
+/* The accent is the encounter's own, so the cards stay distinguishable in a
+   long scroll without any of them shouting. */
+.lb-mon::before {
   content: '';
   position: absolute;
   inset: 0 auto 0 0;
@@ -72,84 +59,80 @@
   background: linear-gradient(180deg, var(--acc), transparent 75%);
   opacity: 0.8;
 }
+.lb-mon.sealed { opacity: 0.8; }
 
-.lbb-head {
+.lbm-head {
   display: flex;
   align-items: center;
   gap: var(--s-3);
   padding: var(--s-3) var(--s-4);
   border-bottom: var(--line-w) solid var(--line);
 }
-.lbb-icon { font-size: 1.5rem; line-height: 1; filter: saturate(0.9); }
-.lbb-title h2 { font-size: 1.1rem; color: var(--acc); }
-.lbb-meta { font-size: 0.74rem; color: var(--muted); margin-top: 0.125rem; }
+/* The ordinal: the encounter's place in the road, in the site's numerals. */
+.lbm-ord {
+  font-family: var(--nms-serif);
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--acc);
+  min-width: 2.2rem;
+  opacity: 0.85;
+}
+.lbm-title h2 { font-size: 1.1rem; color: var(--acc); }
+.lbm-meta { display: flex; flex-wrap: wrap; gap: var(--s-3); font-size: 0.74rem; color: var(--muted); margin-top: 0.125rem; }
+.lbm-meta .sub { color: var(--text-2); }
+.lbm-meta .fell { color: var(--warn); }
 
-.lbb-cols {
+.lbm-invite { margin: 0; padding: var(--s-4); font-size: 0.86rem; color: var(--muted); max-width: 64ch; line-height: 1.5; }
+
+/* ---- the matrix ----
+   A grid, not a table: the header cells and the body cells are siblings, so
+   one `gap` spaces the lot and a column never drifts from its heading. */
+.lbm-matrix {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  gap: var(--s-4);
-  padding: var(--s-4);
+  gap: 0.375rem;
+  padding: var(--s-3) var(--s-4) var(--s-4);
+  align-items: stretch;
 }
-.lbb-col h3 {
-  font-family: var(--nms-sans);
-  font-size: 0.66rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--text-2);
-  margin-bottom: var(--s-2);
-}
-.lbb-col h3 em {
-  font-style: normal;
-  letter-spacing: 0.04em;
-  text-transform: none;
-  color: var(--line-2);
-  font-weight: 400;
-  margin-left: var(--s-2);
-}
-
-.lbb-row {
-  appearance: none;
-  width: 100%;
-  border: 0;
-  background: none;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  display: grid;
-  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
-  align-items: center;
-  gap: var(--s-2);
-  padding: 0.3125rem var(--s-2);
-  border-radius: var(--r-sm);
-  cursor: pointer;
-}
-.lbb-row:hover { background: color-mix(in srgb, var(--arcane) 9%, transparent); }
-.lbb-row:disabled { cursor: default; }
-.lbb-row:disabled:hover { background: none; }
-
-.lbb-row .bk {
-  font-size: 0.58rem;
-  letter-spacing: 0.1em;
+.lbm-matrix .mh {
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   font-weight: 700;
   color: var(--muted);
+  align-self: center;
 }
-.lbb-row.b1 .bk { color: var(--slot-1); }
-.lbb-row.b2 .bk { color: var(--slot-2); }
-.lbb-row.b3 .bk { color: var(--slot-3); }
+.lbm-matrix .mh.col { text-align: center; padding-bottom: 0.25rem; }
+.lbm-matrix .mh.col i { font-style: normal; margin-left: 0.35rem; color: var(--line-2); font-variant-numeric: tabular-nums; }
+.lbm-matrix .mh.col.b1 { color: var(--slot-1); }
+.lbm-matrix .mh.col.b2 { color: var(--slot-2); }
+.lbm-matrix .mh.col.b3 { color: var(--slot-3); }
+.lbm-matrix .mh.row { color: var(--text-2); padding-right: var(--s-2); }
 
-.lbb-row .who { min-width: 0; display: flex; flex-direction: column; }
-.lbb-row .nm { font-size: 0.82rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.lbb-row .when { font-size: 0.68rem; color: var(--muted); }
-
-.lbb-row .val { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 0.86rem; white-space: nowrap; }
-.lbb-row .val em {
-  font-style: normal;
-  font-weight: 600;
-  font-size: 0.62rem;
-  color: var(--muted);
-  margin-left: 0.25rem;
+.lbm-matrix .cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  padding: 0.5rem 0.625rem;
+  border: var(--line-w) solid var(--line);
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--void) 45%, transparent);
 }
-.lbb-row .val.first { color: var(--gold-hi); }
-.lbb-row .val.speed { color: var(--arcane-hi); }
-.lbb-row .val.dps { color: var(--good); }
+.lbm-matrix .cell.open { border-style: dashed; opacity: 0.55; }
+.lbm-matrix .cell .v { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 0.95rem; color: var(--text); }
+.lbm-matrix .cell .v.first { color: var(--gold-hi); font-size: 0.86rem; }
+.lbm-matrix .cell .v.fastest { color: var(--arcane-hi); }
+.lbm-matrix .cell .v.dps { color: var(--good); }
+.lbm-matrix .cell.open .v { color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; }
+.lbm-matrix .cell .d { font-size: 0.66rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.lbm-matrix .party { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.lbm-matrix .who { display: flex; align-items: center; gap: 0.4rem; min-width: 0; font-size: 0.8rem; }
+.lbm-matrix .who .wn { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Below this three cells plus a label do not fit; the matrix scrolls
+   sideways rather than crushing the party names into nothing. */
+@media (max-width: 62.5em) {
+  .lbm-matrix { overflow-x: auto; }
+  .lbm-matrix .cell { min-width: 9rem; }
+}

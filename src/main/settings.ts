@@ -1,7 +1,7 @@
 import { existsSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import Store from 'electron-store'
-import { DEFAULT_SETTINGS, type Settings } from '@shared/ipc'
+import { DEFAULT_SETTINGS, LEGACY_DEFAULTS, type Settings } from '@shared/ipc'
 
 const store = new Store<{ settings: Settings }>({
   name: 'triune-helper',
@@ -12,6 +12,34 @@ const store = new Store<{ settings: Settings }>({
   // with no way for the user to recover short of deleting the file by hand.
   clearInvalidConfig: true
 })
+
+/**
+ * Move the previous server's defaults to this one's, once.
+ *
+ * 0.3.0 pointed the app at The Second Calling. A settings file from an
+ * earlier build still holds the old site and the old shortname - not because
+ * anybody chose them, but because the old build wrote its defaults out. Left
+ * alone, an updated install would keep looking for `eqlog_*_multiclass.txt`
+ * and asking a website it no longer has any business with.
+ *
+ * Only a value that EQUALS the old default is moved. Anything else was typed
+ * by a person, and a person's choice is not ours to second-guess - somebody
+ * pointing the app at a third server keeps their setting.
+ */
+function carryDefaultsForward(): void {
+  const stored = store.get('settings')
+  if (!stored) return
+  const patch: Partial<Settings> = {}
+  if (stored.ptdexBase === LEGACY_DEFAULTS.ptdexBase) patch.ptdexBase = DEFAULT_SETTINGS.ptdexBase
+  if (stored.serverShortname === LEGACY_DEFAULTS.serverShortname) {
+    patch.serverShortname = DEFAULT_SETTINGS.serverShortname
+  }
+  if (Object.keys(patch).length === 0) return
+  store.set('settings', { ...stored, ...patch })
+  console.log(`[settings] carried forward: ${Object.keys(patch).join(', ')}`)
+}
+
+carryDefaultsForward()
 
 export function getSettings(): Settings {
   // Merge over defaults so a settings file written by an older build still
@@ -36,6 +64,12 @@ export function setSettings(patch: Partial<Settings>): Settings {
  * isn't there.
  */
 const CANDIDATE_ROOTS = [
+  'C:\\TSC Client',
+  'C:\\TSC',
+  'C:\\The Second Calling',
+  'C:\\Second Calling\\TSC Client',
+  'C:\\Games\\TSC Client',
+  'C:\\Games\\The Second Calling',
   'C:\\ProjectTriune',
   'C:\\Triune',
   'C:\\THJ',

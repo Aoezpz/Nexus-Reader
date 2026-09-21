@@ -1,8 +1,14 @@
 /**
- * Renders the app icon from the same mark the UI draws, using Electron itself.
+ * Renders the app icon - the server's phoenix on a navy plate - using
+ * Electron itself.
  *
- * No image toolchain, no design asset to keep in sync: the icon IS the mark,
- * rendered offscreen at 1024px and written to build/icon.png.
+ * No image toolchain: the icon is a small HTML page (the plate as SVG, the
+ * phoenix as an <img>) rendered offscreen at 1024px and written to
+ * build/icon.png. The phoenix is the site's own mark, `build/phoenix-mark.png`
+ * (the 620px copy of artwork/phoenix-mark.png from the website repo): the
+ * bird in its fire ring on a black ground. Screen-blending it over the plate
+ * makes the black vanish and leaves the fire, which is why no alpha has to be
+ * keyed out of it here.
  *
  * It also writes build/icon.ico, and that one is not a convenience. Embedding
  * an icon into the executable needs an .ico, and the electron-builder step
@@ -12,15 +18,14 @@
  * here sidesteps that entirely: the format is a header, a table and a run of
  * PNGs, and Windows has read PNG-in-ICO since Vista.
  *
- * TWO artworks are rendered, not one. Downscaling the full mark to 16px turns
- * the two outer bars into a smear either side of the centre one, so the small
- * entries come from a reduced drawing - ring plus spire, thicker stroke. That
- * is the same threshold the React component uses (Crest.tsx, REDUCE_BELOW).
+ * TWO crops are rendered, not one. Downscaled to 16px the whole ring is an
+ * orange smudge, so the small entries come from a tighter crop - the head and
+ * the shoulders of the wings - which still reads as a bird at tray size.
  *
  *   node scripts/make-icon.mjs
  */
 import { spawn } from 'node:child_process'
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -29,54 +34,55 @@ const out = join(root, 'build', 'icon.png')
 mkdirSync(dirname(out), { recursive: true })
 
 /**
- * The plate. A transparent icon disappears on a dark taskbar, and the mark's
- * own halo is far too faint to carry it.
- *
- * The ring is lighter here than in the app (#7d6fa0 against #5b5170). On screen
- * it sits on a panel and only has to suggest an edge; on a taskbar it is
- * competing with whatever wallpaper is behind the bar, and the app-side value
- * simply disappears there.
+ * The plate. A transparent icon disappears on a dark taskbar, and the fire on
+ * its own has no edge. The site's navy, lit from below in its red, with the
+ * same rounded corner every entry shares.
  */
-const CHROME = `
+const PLATE = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="1024" height="1024" style="position:absolute;inset:0">
   <defs>
-    <radialGradient id="plate" cx="50%" cy="34%" r="76%">
-      <stop offset="0" stop-color="#241d38"/><stop offset="1" stop-color="#0b0812"/>
+    <radialGradient id="plate" cx="50%" cy="30%" r="80%">
+      <stop offset="0" stop-color="#1c2740"/><stop offset="1" stop-color="#06090f"/>
     </radialGradient>
-    <radialGradient id="halo">
-      <stop offset=".34" stop-color="#a855f7" stop-opacity="0"/>
-      <stop offset=".66" stop-color="#c9a2ff" stop-opacity=".34"/>
-      <stop offset="1" stop-color="#c9a2ff" stop-opacity="0"/>
+    <radialGradient id="coals" cx="50%" cy="100%" r="70%">
+      <stop offset="0" stop-color="#d0343f" stop-opacity=".28"/><stop offset="1" stop-color="#d0343f" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect x="1.5" y="1.5" width="45" height="45" rx="10.5" fill="url(#plate)"/>
-  <circle cx="24" cy="24" r="21.5" fill="url(#halo)"/>`
-
-/** The mark is inset so the ring never runs into the plate's rounded corner. */
-const INSET = `translate(24,24) scale(0.84) translate(-24,-24)`
-
-const FULL = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="1024" height="1024">
-  ${CHROME}
-  <g transform="${INSET}" fill="none">
-    <path d="M11.14 8.68A20 20 0 1 1 11.14 39.32" stroke="#7d6fa0" stroke-width="3.6" stroke-linecap="round"/>
-    <rect x="14.5" y="25" width="4.6" height="9"  rx="1.6" fill="#a855f7" opacity="0.6"/>
-    <path d="M21.7 34V19.5L24 14.5L26.3 19.5V34Z" fill="#c9a2ff"/>
-    <rect x="28.9" y="22" width="4.6" height="12" rx="1.6" fill="#a855f7" opacity="0.85"/>
-  </g>
+  <rect x="1.5" y="1.5" width="45" height="45" rx="10.5" fill="url(#coals)"/>
 </svg>`
 
-const REDUCED = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="1024" height="1024">
-  ${CHROME}
-  <g transform="${INSET}" fill="none">
-    <path d="M11.14 8.68A20 20 0 1 1 11.14 39.32" stroke="#8e7fb5" stroke-width="6.5" stroke-linecap="round"/>
-    <path d="M20 35V19L24 12L28 19V35Z" fill="#c9a2ff"/>
-  </g>
-</svg>`
+/**
+ * The bird, framed. `object-fit: cover` on the 620x372 source fills the
+ * square with its middle, `object-position` decides which middle, and the
+ * radial mask lets the ring's edges dissolve into the plate rather than end
+ * at a crop line. The clip keeps the fire inside the plate's corner radius.
+ */
+const bird = (transform) => `<img src="phoenix-mark.png" alt="" style="
+  position:absolute; left:6%; top:6%; width:88%; height:88%;
+  object-fit:cover; object-position:50% 42%;
+  mix-blend-mode:screen;
+  clip-path:inset(0 round 20%);
+  -webkit-mask-image:radial-gradient(ellipse 52% 52% at 50% 50%, #000 56%, transparent 82%);
+  mask-image:radial-gradient(ellipse 52% 52% at 50% 50%, #000 56%, transparent 82%);
+  transform:${transform}; transform-origin:50% 40%;">`
+
+const FULL = `${PLATE}${bird('none')}`
+/** Head and shoulders only, so a 16px entry is a bird and not a blaze. */
+const REDUCED = `${PLATE}${bird('scale(1.75)')}`
 
 // overflow:hidden matters: without it the transparent window renders its
-// scrollbars and they end up baked into the corner of the icon.
-const page = (svg) => `<!doctype html><meta charset="utf-8">
+// scrollbars and they end up baked into the corner of the icon. The page is
+// written next to the phoenix so the <img> resolves by relative path - a data
+// URL would have to carry the whole PNG inline.
+const page = (body) => `<!doctype html><meta charset="utf-8">
 <style>html,body{margin:0;padding:0;overflow:hidden;background:transparent}
-svg{display:block}</style>${svg}`
+#icon{position:relative;width:1024px;height:1024px;overflow:hidden}</style>
+<div id="icon">${body}</div>`
+
+const PAGE_FULL = join(root, 'build', '_icon-full.html')
+const PAGE_REDUCED = join(root, 'build', '_icon-reduced.html')
+writeFileSync(PAGE_FULL, page(FULL))
+writeFileSync(PAGE_REDUCED, page(REDUCED))
 
 /**
  * Sizes baked into the .ico.
@@ -96,10 +102,11 @@ const MAIN = `
 const { app, BrowserWindow } = require('electron')
 app.disableHardwareAcceleration()
 
-async function shoot(win, html) {
-  await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html))
-  // One frame is not always enough for gradients to be composited.
-  await new Promise((r) => setTimeout(r, 600))
+async function shoot(win, file) {
+  await win.loadFile(file)
+  // One frame is not always enough for the image to decode and the blend to
+  // be composited.
+  await new Promise((r) => setTimeout(r, 900))
   return win.webContents.capturePage()
 }
 
@@ -109,14 +116,14 @@ app.whenReady().then(async () => {
     webPreferences: { offscreen: false }
   })
 
-  const full = await shoot(win, ${JSON.stringify(page(FULL))})
+  const full = await shoot(win, ${JSON.stringify(PAGE_FULL)})
   process.stdout.write('ICON:' + full.toPNG().toString('base64') + '\\n')
   for (const size of ${JSON.stringify(SIZES)}) {
     const small = full.resize({ width: size, height: size, quality: 'best' })
     process.stdout.write('SIZE:' + size + ':' + small.toPNG().toString('base64') + '\\n')
   }
 
-  const reduced = await shoot(win, ${JSON.stringify(page(REDUCED))})
+  const reduced = await shoot(win, ${JSON.stringify(PAGE_REDUCED)})
   for (const size of ${JSON.stringify(SMALL_SIZES)}) {
     const small = reduced.resize({ width: size, height: size, quality: 'best' })
     process.stdout.write('SIZE:' + size + ':' + small.toPNG().toString('base64') + '\\n')
@@ -177,6 +184,8 @@ child.stdout.on('data', (d) => {
 child.stderr.on('data', (d) => process.stderr.write(d))
 
 child.on('exit', () => {
+  rmSync(PAGE_FULL, { force: true })
+  rmSync(PAGE_REDUCED, { force: true })
   const match = /ICON:([A-Za-z0-9+/=]+)/.exec(buffer)
   if (!match) {
     console.error('icon render produced no image')

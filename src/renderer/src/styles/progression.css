@@ -9,18 +9,9 @@
 .prog { gap: var(--s-4); }
 
 /* ---- headline ---- */
-.prog-hero {
-  position: relative;
-  flex: none;
-  overflow: hidden;
-  border: var(--line-w) solid var(--line);
-  border-radius: var(--r-lg);
-  background:
-    radial-gradient(70% 120% at 12% 100%, color-mix(in srgb, var(--ember) 16%, transparent), transparent 62%),
-    radial-gradient(70% 120% at 88% 0%, color-mix(in srgb, var(--arcane) 16%, transparent), transparent 62%),
-    linear-gradient(180deg, var(--surface-2), var(--ink));
-  box-shadow: var(--shadow-panel);
-}
+/* The ground, brackets, kicker and title rule are shared with every page
+   header - see "Page headers" in app.css. Only the layout is here. */
+.prog-hero { flex: none; }
 .ph-in {
   position: relative;
   z-index: 1;
@@ -55,20 +46,18 @@
 .ph-num span { font-size: 0.7rem; color: var(--muted); }
 
 .ph-copy { flex: 1 1 22rem; min-width: 0; }
-.ph-copy h1 { font-size: 1.9rem; margin: var(--s-1) 0 var(--s-2); }
+.ph-copy h1 { font-size: 1.9rem; margin: var(--s-2) 0 var(--s-2); color: var(--gold-hi); }
 .ph-copy .lede { color: var(--text-2); margin: 0; font-size: 0.9rem; max-width: 56ch; }
 
 .ph-tally { display: flex; gap: var(--s-5); margin-top: var(--s-4); flex-wrap: wrap; }
 .ph-tally .t { display: flex; flex-direction: column; gap: 0.1875rem; }
-.ph-tally .n { font-size: 1.35rem; font-weight: 800; line-height: 1; color: var(--arcane-hi); }
-.ph-tally .n i { font-style: normal; font-size: 0.85rem; color: var(--muted); font-weight: 600; }
-.ph-tally .l {
-  font-size: 0.58rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--muted);
-  font-weight: 700;
-}
+.ph-tally .n { font-size: 1.4rem; line-height: 1; }
+/* The "/41" rides inside the gradient-clipped number, so it takes the
+   gradient too; a dimmer weight is what separates it. */
+.ph-tally .n i { font-style: normal; font-size: 0.85rem; font-weight: 500; opacity: 0.6; }
+/* The unconfirmed count is a warning, not a figure to admire: it keeps its
+   status colour rather than the silver. */
+.ph-tally .n.warn { background: none; -webkit-background-clip: initial; background-clip: initial; color: var(--warn); }
 
 /* ---- next up ---- */
 .prog-next { flex: none; }
@@ -83,9 +72,11 @@
   font-size: 0.84rem;
 }
 .nx:hover { background: color-mix(in srgb, var(--arcane) 8%, transparent); }
+/* Accent, not secondary: in the default scheme the secondary is red, and a
+   row of red dots beside "what to kill next" reads as a row of alarms. */
 .nx-mark {
   width: 0.375rem; height: 0.375rem; border-radius: 50%;
-  background: var(--arcane); align-self: center; flex: none;
+  background: var(--gold); align-self: center; flex: none;
 }
 .nx-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .nx-where { color: var(--muted); font-size: 0.76rem; }
@@ -224,12 +215,16 @@
 }
 .pc-tick:hover { border-color: var(--gold-deep); }
 .pc-st.on .pc-tick { background: color-mix(in srgb, var(--good) 18%, transparent); border-color: color-mix(in srgb, var(--good) 50%, transparent); color: var(--good); }
+/* Killed, not flagged: the tick is amber and a dot rather than a check, so a
+   row the log marked never reads as the same fact as a row the site did. */
+.pc-st.killed .pc-tick { background: color-mix(in srgb, var(--warn) 16%, transparent); border-color: color-mix(in srgb, var(--warn) 50%, transparent); color: var(--warn); }
 
 .pc-tx { min-width: 0; }
 .pc-nm { font-size: 0.86rem; font-weight: 600; }
 .pc-st.on .pc-nm { color: var(--text-2); }
 .pc-nm .stage,
-.pc-nm .byhand {
+.pc-nm .byhand,
+.pc-nm .unconfirmed {
   font-size: 0.58rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -239,8 +234,10 @@
   vertical-align: middle;
   font-weight: 700;
 }
-.pc-nm .stage { color: var(--arcane-hi); border: var(--line-w) solid var(--line-2); }
-.pc-nm .byhand { color: var(--warn); border: var(--line-w) solid color-mix(in srgb, var(--warn) 35%, transparent); }
+.pc-nm .stage { color: var(--gold-hi); border: var(--line-w) solid var(--line-2); }
+.pc-nm .byhand,
+.pc-nm .unconfirmed { color: var(--warn); border: var(--line-w) solid color-mix(in srgb, var(--warn) 35%, transparent); }
+.pc-where .opens { color: var(--gold); }
 
 .pc-how { font-size: 0.76rem; color: var(--muted); margin-top: 0.1875rem; line-height: 1.5; max-width: 76ch; }
 .pc-where { font-size: 0.72rem; color: var(--line-2); margin-top: 0.1875rem; display: flex; gap: var(--s-2); flex-wrap: wrap; }
