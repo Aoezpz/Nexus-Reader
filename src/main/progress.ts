@@ -1,9 +1,9 @@
 import Store from 'electron-store'
 import type { ParsedEvent } from '@shared/parser/types'
 import {
-  allSteps,
   buildKillIndex,
   detectProgress,
+  pruneMarks,
   summarizeProgress,
   type ProgMark,
   type ProgressState,
@@ -33,11 +33,8 @@ export class Progress {
   private state: ProgressState = store.get('progress')
 
   /**
-   * Marks written by a 0.2.0 build against the previous server's data carry
-   * that server's step keys, which will match nothing here - so on first load
-   * against the new data any mark whose key names a step that no longer
-   * exists is dropped. Kills seen in your log on THIS server keep their keys
-   * and survive. A stale flag on a page is worse than a blank one.
+   * Once per run, on the first read: drop what a previous server's build left
+   * behind. The rules and the reasoning are in `pruneMarks`.
    */
   private pruned = false
 
@@ -54,17 +51,14 @@ export class Progress {
   marks(): ProgressState {
     if (!this.pruned) {
       this.pruned = true
-      const valid = new Set(allSteps(PROGRESSION).map((s) => s.key))
-      const kept: ProgressState = {}
-      let dropped = 0
-      for (const [key, mark] of Object.entries(this.state)) {
-        if (valid.has(key)) kept[key] = mark
-        else dropped++
-      }
-      if (dropped > 0) {
+      const { kept, unknown, foreign } = pruneMarks(PROGRESSION, this.state)
+      if (unknown > 0 || foreign > 0) {
         this.state = kept
         this.persist()
-        console.log(`[progress] dropped ${dropped} mark(s) for steps the bundled data no longer has`)
+        console.log(
+          `[progress] dropped ${unknown} mark(s) for steps the bundled data no longer has` +
+            `, and ${foreign} flag(s) the previous server's site had granted`
+        )
       }
     }
     return this.state

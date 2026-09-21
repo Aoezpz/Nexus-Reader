@@ -84,7 +84,11 @@ export interface ProgressionData {
  *
  * `log` is a kill the app saw - a strong hint, not a flag. `site` is what the
  * server's website says the account holds. `manual` is your own hand.
- * `ptdex` is what an older build wrote for a site sync, read as `site`.
+ *
+ * `ptdex` is what an older build wrote for a sync against PTDex, and it is
+ * only ever read in order to be thrown away: PTDex is the PREVIOUS server's
+ * site, so such a mark is an account fact about a server this build is not
+ * pointed at. `Progress.marks()` drops them on load. Nothing writes it.
  */
 export type ProgSource = 'log' | 'manual' | 'site' | 'ptdex'
 
@@ -127,6 +131,39 @@ export function isConfirmed(mark: ProgMark | undefined): boolean {
 /** The name the log will write when this step's boss dies. */
 export function mobName(step: ProgStep): string {
   return (step.mob ?? step.name).toLowerCase()
+}
+
+/**
+ * What survives pointing the app at a different server.
+ *
+ * Two rules, and the second exists because the first quietly implied it:
+ *
+ * 1. A mark whose key names no step in the bundled data is dropped. 0.2.0
+ *    wrote Project Triune's keys, and most of them name nothing here.
+ * 2. A mark sourced `ptdex` is dropped whatever its key says. `ptdex` means
+ *    "the PREVIOUS server's site reported this flag", and a flag is an
+ *    account fact on one server. Rule 1 alone kept exactly the ones that hurt:
+ *    the two servers share stock EverQuest bosses, so the keys collide and
+ *    Triune's flags were being drawn as tscemu.com's.
+ *
+ * A `log` mark survives both. It is drawn as *killed, flag unconfirmed*, so
+ * it asserts only what it saw, and the next site sync settles it.
+ */
+export function pruneMarks(
+  data: ProgressionData,
+  state: ProgressState
+): { kept: ProgressState; unknown: number; foreign: number } {
+  const valid = new Set(allSteps(data).map((s) => s.key))
+  const kept: ProgressState = {}
+  let unknown = 0
+  let foreign = 0
+
+  for (const [key, mark] of Object.entries(state)) {
+    if (!valid.has(key)) unknown++
+    else if (mark.source === 'ptdex') foreign++
+    else kept[key] = mark
+  }
+  return { kept, unknown, foreign }
 }
 
 /** Every step, flattened, with the chapter it belongs to. */

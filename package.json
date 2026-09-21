@@ -1,7 +1,7 @@
 {
   "name": "nexus-reader",
   "productName": "Nexus Reader",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "The Second Calling's log companion - live DPS meter, fight timeline, alerts, the road to Time and the raid records, read from your own logs.",
   "main": "./out/main/index.js",
   "author": "AO",

@@ -102,3 +102,31 @@ now write `_TSC.txt`. On the site, `tests/test_tip.py` (11) and a
   `duration_ticks: 0` becoming null rather than "0 ticks", and the site's
   `CLR` folding through `SITE_CODES` to the app's `Clr`. The search-page
   fallback stays in place for any site that lacks the route.
+
+## 0.3.1 — the flags the old server left behind
+
+Reported the night 0.3.0 was built: Deezel's Progression page showed only
+Ruins of Kunark and the elemental planes done, when tscemu.com says he has all
+57 steps.
+
+**Nothing was wrong with reading the site.** Run against a live fetch of
+`/characters/Deezel/progression`, `parseProgression` returns 57 earned, 0
+unknown, 0 unmatched — the page had simply never been synced, so what was on
+screen was the contents of `triune-progress.json`, and that store held seven
+marks: five sourced `ptdex` in the elemental planes, and two `log` kills in
+Kunark. Both chapters were therefore complete, and nothing else was.
+
+**The defect is that the five survived the carry-forward.** 0.3.0 prunes marks
+whose key names no step in the new data, which removed 51 of Triune's. It kept
+these because `tier-4-the-elemental-planes/fennin ro, the tyrant of fire` is a
+valid key on *both* servers — stock EverQuest bosses collide — and `ptdex` is
+read as a confirmed flag, so Triune's flags were drawn as The Second Calling's.
+That is the one thing this app promises not to do: it presented another
+server's fact as this server's.
+
+`pruneMarks` (now pure, in `shared/progression.ts`, so it is testable) adds the
+second rule: **a mark sourced `ptdex` is dropped whatever its key says**,
+because a flag is an account fact on one specific server and does not travel.
+Log marks survive — they are drawn as *killed, flag unconfirmed* and claim
+nothing they cannot support. `tests/progress.test.ts` pins it with the store's
+real contents.
