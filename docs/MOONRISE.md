@@ -95,6 +95,10 @@ now write `_TSC.txt`. On the site, `tests/test_tip.py` (11) and a
   `electron-builder.yml`, `docs/index.html`). `appId` stays
   `com.projecttriune.helper` — see the note in `electron-builder.yml`; it is
   now the only upgrade path an old install has.
-- **The site's endpoint is written and tested, not deployed.** Until
-  `tscemu-site` is deployed the app uses the search-page fallback, which shows
-  a one-line card. Nothing on the app side changes when it lands.
+- ~~**The site's endpoint is written and tested, not deployed.**~~ — **live
+  2026-09-21 01:01 UTC.** `/items/tip`, `/spells/tip` and `/discs/tip` all
+  answer on tscemu.com, and the payloads were checked field by field against
+  `tipFromJson`: the pair shapes, `cast_ms`/`recast_ms` dividing to seconds,
+  `duration_ticks: 0` becoming null rather than "0 ticks", and the site's
+  `CLR` folding through `SITE_CODES` to the app's `Clr`. The search-page
+  fallback stays in place for any site that lacks the route.
