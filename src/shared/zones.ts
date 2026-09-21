@@ -6,7 +6,7 @@
  * log never states a position, but it states every transition, and a zone is
  * just the gap between two of them.
  *
- * What this deliberately is NOT: a map. Triune-Helper reads logs and nothing
+ * What this deliberately is NOT: a map. Nexus Reader reads logs and nothing
  * else, and a log carries no coordinates - not one `/loc` in twenty-three
  * thousand lines of real play. Anything drawing a dot for "you are here" would
  * be inventing it.

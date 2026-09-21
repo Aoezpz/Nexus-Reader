@@ -4,8 +4,14 @@
 # NSIS writes its uninstall entry under this id. A new installer looks the id up
 # to find and remove the previous install, so changing it here would not upgrade
 # a Triune-Helper user - it would install alongside them: two Start Menu
-# entries, two executables, and an old copy still watching this same release
-# feed and still offering to "update" into yet another parallel install.
+# entries and two executables, one of them an abandoned 0.1.x that can no
+# longer even find out it is old.
+#
+# That last part is now literal. The repo those builds check, Aoezpz/
+# Triune-Helper, was deleted, and a deleted name leaves no redirect - so every
+# 0.1.x install in the world is permanently stuck, and the ONLY route it has to
+# 0.3.0 is somebody running this installer over the top of it. Which is exactly
+# what this id buys. Do not change it to tidy up the branding.
 #
 # The string is internal (an uninstall registry key and the taskbar's
 # AppUserModelID). Nothing on screen reads it.
@@ -107,4 +113,4 @@ nsis:
 publish:
   provider: github
   owner: Aoezpz
-  repo: Triune-Helper
+  repo: Nexus-Reader

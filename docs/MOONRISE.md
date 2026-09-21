@@ -87,8 +87,14 @@ now write `_TSC.txt`. On the site, `tests/test_tip.py` (11) and a
   yet; Deezel has since run `/log on` and the client wrote
   `eqlog_Deezel_TSC.txt`, which is what `settings.ts` scans for and what
   `watcher.ts` matches. The default is right.
-- **Step 10 of the rebrand, the GitHub rename**, is still open. Every
-  `Aoezpz/Triune-Helper` URL is unchanged and working.
+- ~~**Step 10 of the rebrand, the GitHub rename**~~ — **done 2026-09-20, and
+  not as a rename.** `Aoezpz/Triune-Helper` had been **deleted**, so there was
+  no name to rename and no redirect to inherit: every URL in this project
+  pointed at a 404, including the update feed compiled into 0.1.x. The app now
+  publishes to and checks **`Aoezpz/Nexus-Reader`** (`src/shared/update.ts`,
+  `electron-builder.yml`, `docs/index.html`). `appId` stays
+  `com.projecttriune.helper` — see the note in `electron-builder.yml`; it is
+  now the only upgrade path an old install has.
 - **The site's endpoint is written and tested, not deployed.** Until
   `tscemu-site` is deployed the app uses the search-page fallback, which shows
   a one-line card. Nothing on the app side changes when it lands.

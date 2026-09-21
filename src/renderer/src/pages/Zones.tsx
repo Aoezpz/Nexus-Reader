@@ -17,7 +17,7 @@ import { Aurora, Starfield } from '../components/Ambient'
  * What it paid is the second column, right beside it, so the comparison is
  * unavoidable.
  *
- * There is no map. Triune-Helper reads logs and nothing else, and a log carries
+ * There is no map. Nexus Reader reads logs and nothing else, and a log carries
  * no coordinates - so a map here could show the terrain but never you, and a
  * map that cannot show you is a picture.
  */

@@ -199,14 +199,20 @@ this app does not put fabricated log lines on screen beside real ones.
 tscemu.com; the "never name a server" rule above was set aside on purpose.
 Obelisk survives as a scheme. See `docs/MOONRISE.md`.
 
-## Still open
+## Closed
 
-- **Step 10, the GitHub rename**, which needs a decision rather than a commit:
-  every `github.com/Aoezpz/Triune-Helper` URL in `docs/index.html`,
-  `src/shared/update.ts` and `electron-builder.yml` is deliberately unchanged
-  until the repo itself is renamed. They work today; renaming the repo makes
-  GitHub redirect them, so either state is consistent - a half-done rename is
-  not.
-- The Zones and Loot page banners still draw the procedural starfield.
-- Whether the window title stays "Nexus Reader" alone or carries the server it is
-  pointed at.
+- **Step 10, the GitHub move** - settled 2026-09-20, and the assumption above
+  was wrong. It says the old URLs "work today" and that a rename would leave
+  redirects. Neither held: `Aoezpz/Triune-Helper` had been **deleted**. There
+  was nothing to rename, no redirect, and every URL in this repo - plus the
+  update feed compiled into every 0.1.x build - was pointing at a 404. Fixed
+  forward to **`Aoezpz/Nexus-Reader`** in `src/shared/update.ts`,
+  `electron-builder.yml` and `docs/index.html`, all three together.
+
+  The lesson worth keeping: this step was held open for a *rename*, and holding
+  it is what let a *deletion* sit unnoticed. A URL nothing ever requests is not
+  a working URL; it is an untested one.
+- The Zones and Loot banners - the starfield is gone. 0.3.0 rebuilt every page
+  header in the site's masthead language; see `docs/MOONRISE.md`.
+- The window title - it **carries the server**. The sub-line reads "The Second
+  Calling". 0.3.0 is built for one server and says so.

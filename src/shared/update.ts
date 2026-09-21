@@ -14,8 +14,8 @@
  */
 
 /** Where the check looks. Public, unauthenticated, read-only. */
-export const RELEASES_API = 'https://api.github.com/repos/Aoezpz/Triune-Helper/releases/latest'
-export const RELEASES_PAGE = 'https://github.com/Aoezpz/Triune-Helper/releases/latest'
+export const RELEASES_API = 'https://api.github.com/repos/Aoezpz/Nexus-Reader/releases/latest'
+export const RELEASES_PAGE = 'https://github.com/Aoezpz/Nexus-Reader/releases/latest'
 
 /**
  * How long a successful answer is trusted.
